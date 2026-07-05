@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PocketPro – Risk Manager</title>
+  <meta name="description" content="Professional binary options risk management calculator for Pocket Option traders."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:'#6C63FF', secondary:'#FF6584', accent:'#43E97B',
+            dark:'#0D0F1A', darker:'#080A12', card:'#12162A',
+            border:'#1E2340', win:'#43E97B', loss:'#FF4C6A', neutral:'#F0B429',
+          },
+          fontFamily:{ inter:['Inter','sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    .strategy-btn { transition: all 0.2s ease; cursor: pointer; }
+    .strategy-btn.active {
+      background: linear-gradient(135deg,#6C63FF,#FF6584);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(108,99,255,0.35);
+    }
+    .risk-level-safe   { color:#43E97B; }
+    .risk-level-mod    { color:#F0B429; }
+    .risk-level-danger { color:#FF4C6A; }
+    .warning-badge { background:rgba(255,76,106,0.12); border:1px solid rgba(255,76,106,0.3); border-radius:10px; padding:12px 16px; }
+    .info-badge    { background:rgba(108,99,255,0.12); border:1px solid rgba(108,99,255,0.3); border-radius:10px; padding:12px 16px; }
+    .tip-badge     { background:rgba(67,233,123,0.1);  border:1px solid rgba(67,233,123,0.3);  border-radius:10px; padding:12px 16px; }
+    .card-glow-green { box-shadow: 0 0 30px rgba(67,233,123,0.08); }
+    .card-glow-red   { box-shadow: 0 0 30px rgba(255,76,106,0.08); }
+    .mart-row { transition: background 0.15s; }
+    .mart-row:hover { background: rgba(108,99,255,0.05); }
+    input[type=range] { accent-color: #6C63FF; }
+    .spinner { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes countUp {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .count-anim { animation: countUp 0.4s ease both; }
+  </style>
+</head>
+<body class="bg-darker font-inter text-white min-h-screen">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 flex flex-col">
+  <div class="p-6 border-b border-border">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+        <i class="fas fa-chart-line text-white text-lg"></i>
+      </div>
+      <div><h1 class="font-bold text-lg text-white">PocketPro</h1><p class="text-xs text-gray-400">Trade Manager</p></div>
+    </div>
+  </div>
+  <nav class="flex-1 p-4 space-y-1">
+    <a href="index.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+      <i class="fas fa-grid-2 w-5 text-center"></i> Dashboard
+    </a>
+    <a href="trades.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+      <i class="fas fa-list-check w-5 text-center"></i> Trade Log
+    </a>
+    <a href="analytics.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+      <i class="fas fa-chart-bar w-5 text-center"></i> Analytics
+    </a>
+    <a href="risk.html" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+      <i class="fas fa-shield-halved w-5 text-center"></i> Risk Manager
+    </a>
+    <a href="settings.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+      <i class="fas fa-gear w-5 text-center"></i> Settings
+    </a>
+  </nav>
+  <div class="p-4 border-t border-border">
+    <div class="bg-dark rounded-xl p-3 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-sm font-bold">H</div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-white truncate" id="sidebar-username">Hari</p>
+        <p class="text-xs text-gray-400">Trader</p>
+      </div>
+      <i class="fas fa-circle text-accent text-xs"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="ml-64 min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-darker/80 backdrop-blur-xl border-b border-border px-8 py-4 flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-bold text-white flex items-center gap-2">
+        <i class="fas fa-shield-halved text-primary"></i> Risk Manager
+      </h2>
+      <p class="text-sm text-gray-400">Professional trade sizing & risk calculators</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <!-- Live Balance Pill -->
+      <div class="bg-card border border-border rounded-xl px-4 py-2 flex items-center gap-2">
+        <i class="fas fa-wallet text-primary text-xs"></i>
+        <span class="text-xs text-gray-400">Balance:</span>
+        <span class="text-sm font-bold text-white" id="header-balance">—</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-8 space-y-8">
+
+    <!-- ═══════════════════════════════════
+         SMALL ACCOUNT WARNING
+         ═══════════════════════════════════ -->
+    <div id="small-account-warning" class="hidden">
+      <div class="warning-badge flex items-start gap-3">
+        <i class="fas fa-triangle-exclamation text-loss text-lg mt-0.5 shrink-0"></i>
+        <div>
+          <p class="text-loss font-bold text-sm">⚠️ Small Account Detected (under $50)</p>
+          <p class="text-gray-300 text-xs mt-1 leading-relaxed">
+            Pocket Option minimum trade is <strong>$1</strong>. With your balance, you're forced to risk more than the safe 2% rule per trade.
+            <strong class="text-loss">Trade with extreme caution.</strong>
+            Consider building your account to at least $50–$100 before trading real money.
+            Use the <strong>Demo Account</strong> to practice first!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         MAIN INPUTS (Balance + Payout)
+         ═══════════════════════════════════ -->
+    <div class="grid grid-cols-3 gap-6">
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <label class="text-xs text-gray-400 font-medium block mb-2">Your Account Balance</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">$</span>
+          <input id="rm-balance" type="number" min="1" step="0.01" placeholder="e.g. 100"
+            class="w-full bg-dark border border-border text-white text-xl font-bold rounded-xl pl-8 pr-4 py-3 outline-none focus:border-primary transition-colors placeholder-gray-600"
+            oninput="onInputChange()"/>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Auto-loaded from your settings</p>
+      </div>
+
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <label class="text-xs text-gray-400 font-medium block mb-2">Broker Payout %</label>
+        <div class="relative">
+          <input id="rm-payout" type="number" min="1" max="200" placeholder="e.g. 80"
+            class="w-full bg-dark border border-border text-white text-xl font-bold rounded-xl px-4 pr-10 py-3 outline-none focus:border-primary transition-colors placeholder-gray-600"
+            oninput="onInputChange()"/>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">%</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Pocket Option typical: 75–92%</p>
+      </div>
+
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <label class="text-xs text-gray-400 font-medium block mb-2">Your Estimated Win Rate %</label>
+        <div class="relative">
+          <input id="rm-winrate" type="number" min="1" max="99" placeholder="e.g. 60"
+            class="w-full bg-dark border border-border text-white text-xl font-bold rounded-xl px-4 pr-10 py-3 outline-none focus:border-primary transition-colors placeholder-gray-600"
+            oninput="onInputChange()"/>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">%</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Based on your Trade Log stats</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         STRATEGY SELECTOR
+         ═══════════════════════════════════ -->
+    <div class="bg-card border border-border rounded-2xl p-6">
+      <h3 class="font-bold text-white text-base mb-1">Select Risk Strategy</h3>
+      <p class="text-xs text-gray-400 mb-5">Each strategy has different risk/reward tradeoffs — choose wisely</p>
+      <div class="grid grid-cols-4 gap-3">
+        <button id="btn-fixed" onclick="setStrategy('fixed')"
+          class="strategy-btn active border border-border bg-dark rounded-xl p-4 text-left">
+          <div class="w-9 h-9 rounded-lg bg-accent/20 flex items-center justify-center mb-3">
+            <i class="fas fa-lock text-accent text-sm"></i>
+          </div>
+          <p class="text-sm font-bold text-white">Fixed %</p>
+          <p class="text-xs text-gray-400 mt-1">Risk same % each trade. Safest method.</p>
+          <span class="mt-2 inline-block text-xs px-2 py-0.5 rounded-full bg-win/10 text-win border border-win/20">✅ Recommended</span>
+        </button>
+        <button id="btn-kelly" onclick="setStrategy('kelly')"
+          class="strategy-btn border border-border bg-dark rounded-xl p-4 text-left">
+          <div class="w-9 h-9 rounded-lg bg-primary/20 flex items-center justify-center mb-3">
+            <i class="fas fa-calculator text-primary text-sm"></i>
+          </div>
+          <p class="text-sm font-bold text-white">Kelly Criterion</p>
+          <p class="text-xs text-gray-400 mt-1">Math-optimal bet size based on edge.</p>
+          <span class="mt-2 inline-block text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">📊 Advanced</span>
+        </button>
+        <button id="btn-martingale" onclick="setStrategy('martingale')"
+          class="strategy-btn border border-border bg-dark rounded-xl p-4 text-left">
+          <div class="w-9 h-9 rounded-lg bg-neutral/20 flex items-center justify-center mb-3">
+            <i class="fas fa-arrow-trend-up text-neutral text-sm"></i>
+          </div>
+          <p class="text-sm font-bold text-white">Martingale</p>
+          <p class="text-xs text-gray-400 mt-1">Double after loss. High risk.</p>
+          <span class="mt-2 inline-block text-xs px-2 py-0.5 rounded-full bg-neutral/10 text-neutral border border-neutral/20">⚠️ Risky</span>
+        </button>
+        <button id="btn-fibonacci" onclick="setStrategy('fibonacci')"
+          class="strategy-btn border border-border bg-dark rounded-xl p-4 text-left">
+          <div class="w-9 h-9 rounded-lg bg-secondary/20 flex items-center justify-center mb-3">
+            <i class="fas fa-spiral text-secondary text-sm"></i>
+          </div>
+          <p class="text-sm font-bold text-white">Fibonacci</p>
+          <p class="text-xs text-gray-400 mt-1">Sequence-based sizing. Moderate risk.</p>
+          <span class="mt-2 inline-block text-xs px-2 py-0.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20">🌀 Moderate</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         RESULTS AREA (switches by strategy)
+         ═══════════════════════════════════ -->
+
+    <!-- FIXED % PANEL -->
+    <div id="panel-fixed" class="space-y-6">
+      <div class="grid grid-cols-4 gap-4">
+        <div class="bg-card border border-win/30 rounded-2xl p-5 card-glow-green text-center">
+          <p class="text-xs text-gray-400 mb-2">Safe Trade (1%)</p>
+          <p class="text-2xl font-black text-win count-anim" id="fixed-safe">$1.00</p>
+          <p class="text-xs text-gray-500 mt-1">Conservative</p>
+        </div>
+        <div class="bg-card border border-primary/30 rounded-2xl p-5 text-center">
+          <p class="text-xs text-gray-400 mb-2">Moderate Trade (2%)</p>
+          <p class="text-2xl font-black text-primary count-anim" id="fixed-mod">$2.00</p>
+          <p class="text-xs text-gray-500 mt-1">Standard</p>
+        </div>
+        <div class="bg-card border border-neutral/30 rounded-2xl p-5 text-center">
+          <p class="text-xs text-gray-400 mb-2">Aggressive (5%)</p>
+          <p class="text-2xl font-black text-neutral count-anim" id="fixed-agg">$5.00</p>
+          <p class="text-xs text-gray-500 mt-1">High risk</p>
+        </div>
+        <div class="bg-card border border-loss/30 rounded-2xl p-5 card-glow-red text-center">
+          <p class="text-xs text-gray-400 mb-2">Max Allowed (10%)</p>
+          <p class="text-2xl font-black text-loss count-anim" id="fixed-max">$10.00</p>
+          <p class="text-xs text-gray-500 mt-1">Danger zone</p>
+        </div>
+      </div>
+
+      <!-- Custom % Slider -->
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="font-semibold text-white text-sm">Custom Risk Percentage</h4>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl font-black" id="custom-pct-label" style="color:#43E97B">2%</span>
+            <span class="text-xs text-gray-400">of balance</span>
+          </div>
+        </div>
+        <input type="range" id="custom-pct" min="0.5" max="20" step="0.5" value="2"
+          class="w-full h-2 rounded-full mb-4" oninput="updateCustomPct(this.value)"/>
+        <div class="flex justify-between text-xs text-gray-500 mb-4">
+          <span>0.5% (Ultra Safe)</span><span>5% (Risky)</span><span>20% (Dangerous)</span>
+        </div>
+        <!-- Result Box -->
+        <div class="bg-dark border border-border rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-gray-400">Recommended Trade Amount</p>
+            <p class="text-3xl font-black mt-1" id="custom-trade-amt" style="color:#43E97B">$2.00</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-gray-400">Potential Profit (win)</p>
+            <p class="text-xl font-bold text-win" id="custom-profit-win">+$1.60</p>
+            <p class="text-xs text-gray-400 mt-1">Potential Loss</p>
+            <p class="text-sm font-bold text-loss" id="custom-profit-loss">-$2.00</p>
+          </div>
+        </div>
+        <!-- Survival Stats -->
+        <div class="grid grid-cols-3 gap-3 mt-4">
+          <div class="bg-dark rounded-xl p-3 text-center">
+            <p class="text-xs text-gray-400">Trades before bust</p>
+            <p class="text-lg font-bold text-white" id="custom-trades-bust">50</p>
+          </div>
+          <div class="bg-dark rounded-xl p-3 text-center">
+            <p class="text-xs text-gray-400">Risk level</p>
+            <p class="text-sm font-bold" id="custom-risk-label">Low</p>
+          </div>
+          <div class="bg-dark rounded-xl p-3 text-center">
+            <p class="text-xs text-gray-400">After 10 losses</p>
+            <p class="text-lg font-bold text-white" id="custom-after-loss">$80</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      <div class="tip-badge flex items-start gap-3">
+        <i class="fas fa-lightbulb text-win text-lg mt-0.5 shrink-0"></i>
+        <div>
+          <p class="text-win font-bold text-sm">✅ Fixed % Rule – Best Practice</p>
+          <ul class="text-gray-300 text-xs mt-2 space-y-1 list-disc list-inside leading-relaxed">
+            <li>Always risk the <strong>same % per trade</strong> regardless of wins or losses</li>
+            <li>Never risk more than <strong>2% per trade</strong> if you want to survive long-term</li>
+            <li>With 60% win rate and 80% payout: breakeven = 56%. You have an <strong>edge!</strong></li>
+            <li>Stop trading if you lose <strong>3 trades in a row</strong> — take a break</li>
+            <li>Set a <strong>daily loss limit</strong> of 5–6% of your total balance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- KELLY CRITERION PANEL -->
+    <div id="panel-kelly" class="hidden space-y-6">
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+            <i class="fas fa-calculator text-primary text-lg"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-white text-base">Kelly Criterion Formula</h4>
+            <p class="text-xs text-gray-400 mt-1">f* = (b×p − q) / b &nbsp;|&nbsp; b=payout/100, p=win rate, q=1−p</p>
+          </div>
+        </div>
+        <!-- Formula Breakdown -->
+        <div class="mt-5 grid grid-cols-3 gap-3">
+          <div class="bg-dark rounded-xl p-3 text-center">
+            <p class="text-xs text-gray-400">p (Win Prob)</p>
+            <p class="text-xl font-black text-primary" id="kelly-p">0.60</p>
+          </div>
+          <div class="bg-dark rounded-xl p-3 text-center">
+            <p class="text-xs text-gray-400">q (Loss Prob)</p>
+            <p class="text-xl font-black text-secondary" id="kelly-q">0.40</p>
+          </div>
+          <div class="bg-dark rounded-xl p-3 text-center">
+            <p class="text-xs text-gray-400">b (Net Payout)</p>
+            <p class="text-xl font-black text-neutral" id="kelly-b">0.80</p>
+          </div>
+        </div>
+        <!-- Results -->
+        <div class="mt-4 grid grid-cols-3 gap-4">
+          <div class="bg-dark border border-primary/20 rounded-xl p-4 text-center">
+            <p class="text-xs text-gray-400 mb-1">Full Kelly %</p>
+            <p class="text-2xl font-black text-primary" id="kelly-full-pct">0%</p>
+            <p class="text-xs text-gray-500 mt-1" id="kelly-full-amt">$0</p>
+            <p class="text-xs text-loss mt-1">⚠️ Too aggressive</p>
+          </div>
+          <div class="bg-dark border border-win/20 rounded-xl p-4 text-center col-span-1">
+            <p class="text-xs text-gray-400 mb-1">Half Kelly % <span class="text-win">(Recommended)</span></p>
+            <p class="text-2xl font-black text-win" id="kelly-half-pct">0%</p>
+            <p class="text-xs text-gray-500 mt-1" id="kelly-half-amt">$0</p>
+            <p class="text-xs text-win mt-1">✅ Best balance</p>
+          </div>
+          <div class="bg-dark border border-neutral/20 rounded-xl p-4 text-center">
+            <p class="text-xs text-gray-400 mb-1">Quarter Kelly %</p>
+            <p class="text-2xl font-black text-neutral" id="kelly-quarter-pct">0%</p>
+            <p class="text-xs text-gray-500 mt-1" id="kelly-quarter-amt">$0</p>
+            <p class="text-xs text-gray-500 mt-1">Ultra-conservative</p>
+          </div>
+        </div>
+        <!-- Edge Check -->
+        <div id="kelly-edge-box" class="mt-4 rounded-xl p-4 text-center">
+          <p class="text-sm font-bold" id="kelly-edge-label">Calculating edge…</p>
+          <p class="text-xs text-gray-400 mt-1" id="kelly-edge-desc"></p>
+        </div>
+      </div>
+      <div class="info-badge flex items-start gap-3">
+        <i class="fas fa-info-circle text-primary text-lg mt-0.5 shrink-0"></i>
+        <div>
+          <p class="text-primary font-bold text-sm">📊 Kelly Criterion Explained</p>
+          <ul class="text-gray-300 text-xs mt-2 space-y-1 list-disc list-inside leading-relaxed">
+            <li><strong>Full Kelly:</strong> Mathematically optimal but creates huge swings in balance</li>
+            <li><strong>Half Kelly:</strong> 75% of the growth with much lower volatility — <span class="text-win">use this!</span></li>
+            <li><strong>Negative Kelly:</strong> Your win rate is too low — you have no mathematical edge yet</li>
+            <li>Binary options breakeven win rate = 100 / (100 + payout)</li>
+            <li>At 80% payout, you need <strong>at least 55.6% win rate</strong> to be profitable</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARTINGALE PANEL -->
+    <div id="panel-martingale" class="hidden space-y-6">
+      <div class="warning-badge flex items-start gap-3">
+        <i class="fas fa-skull-crossbones text-loss text-lg mt-0.5 shrink-0"></i>
+        <div>
+          <p class="text-loss font-bold text-sm">⚠️ DANGER: Martingale is Extremely High Risk</p>
+          <p class="text-gray-300 text-xs mt-1 leading-relaxed">Martingale doubles your bet after every loss. A losing streak of 5-7 trades can <strong class="text-loss">wipe out your entire account.</strong> This table shows exactly why most pros avoid it.</p>
+        </div>
+      </div>
+
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="font-bold text-white">Martingale Sequence Calculator</h4>
+          <div class="flex items-center gap-3">
+            <label class="text-xs text-gray-400">Starting Bet:</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+              <input id="mart-start" type="number" min="1" step="0.5" value="1"
+                class="bg-dark border border-border text-white text-sm rounded-lg pl-7 pr-3 py-2 w-24 outline-none focus:border-primary transition-colors"
+                oninput="calcMartingale()"/>
+            </div>
+            <label class="text-xs text-gray-400">Multiplier:</label>
+            <select id="mart-mult" onchange="calcMartingale()"
+              class="bg-dark border border-border text-white text-sm rounded-lg px-3 py-2 outline-none cursor-pointer">
+              <option value="2">×2 (Classic)</option>
+              <option value="2.5">×2.5</option>
+              <option value="3">×3 (Aggressive)</option>
+            </select>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-xs text-gray-400 border-b border-border">
+                <th class="text-left pb-3 px-3">Level</th>
+                <th class="text-left pb-3 px-3">Trade Amount</th>
+                <th class="text-left pb-3 px-3">Total At Risk</th>
+                <th class="text-left pb-3 px-3">Balance After Loss</th>
+                <th class="text-left pb-3 px-3">% of Balance Used</th>
+                <th class="text-left pb-3 px-3">Risk Level</th>
+              </tr>
+            </thead>
+            <tbody id="mart-tbody"></tbody>
+          </table>
+        </div>
+        <!-- Recovery chart note -->
+        <div class="mt-4 bg-dark rounded-xl p-4">
+          <p class="text-xs text-gray-400 mb-2">If you WIN at any level, you recover all previous losses + profit of your first trade</p>
+          <div class="flex items-center gap-2 text-xs">
+            <div class="w-3 h-3 rounded-full bg-win"></div><span class="text-gray-300">Win — recovers all losses</span>
+            <div class="w-3 h-3 rounded-full bg-loss ml-4"></div><span class="text-gray-300">Loss — move to next level</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIBONACCI PANEL -->
+    <div id="panel-fibonacci" class="hidden space-y-6">
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h4 class="font-bold text-white">Fibonacci Sequence Sizing</h4>
+            <p class="text-xs text-gray-400 mt-1">Move one step forward after a loss, two steps back after a win</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <label class="text-xs text-gray-400">Base Unit:</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+              <input id="fib-base" type="number" min="1" step="0.5" value="1"
+                class="bg-dark border border-border text-white text-sm rounded-lg pl-7 pr-3 py-2 w-24 outline-none focus:border-primary transition-colors"
+                oninput="calcFibonacci()"/>
+            </div>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-xs text-gray-400 border-b border-border">
+                <th class="text-left pb-3 px-3">Step</th>
+                <th class="text-left pb-3 px-3">Fibonacci #</th>
+                <th class="text-left pb-3 px-3">Trade Amount</th>
+                <th class="text-left pb-3 px-3">Total Risked</th>
+                <th class="text-left pb-3 px-3">% of Balance</th>
+              </tr>
+            </thead>
+            <tbody id="fib-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="tip-badge flex items-start gap-3">
+        <i class="fas fa-info-circle text-win text-lg mt-0.5 shrink-0"></i>
+        <div>
+          <p class="text-win font-bold text-sm">🌀 Fibonacci Rules</p>
+          <ul class="text-gray-300 text-xs mt-2 space-y-1 list-disc list-inside leading-relaxed">
+            <li>Sequence: 1, 1, 2, 3, 5, 8, 13, 21, 34, 55…</li>
+            <li><strong>After WIN:</strong> Move back 2 steps in the sequence</li>
+            <li><strong>After LOSS:</strong> Move forward 1 step in the sequence</li>
+            <li>Less aggressive than Martingale but still has drawdown risk</li>
+            <li>Reset to step 1 after every completed profit recovery</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         BREAKEVEN ANALYSIS
+         ═══════════════════════════════════ -->
+    <div class="bg-card border border-border rounded-2xl p-6">
+      <h3 class="font-bold text-white text-base mb-1">Breakeven & Profitability Analysis</h3>
+      <p class="text-xs text-gray-400 mb-5">Based on your payout %, find out what win rate you need</p>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <div class="bg-dark rounded-xl p-4 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-gray-400">Breakeven Win Rate</p>
+              <p class="text-xs text-gray-500 mt-0.5">Minimum to not lose money</p>
+            </div>
+            <p class="text-2xl font-black text-neutral" id="be-winrate">55.6%</p>
+          </div>
+          <div class="bg-dark rounded-xl p-4 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-gray-400">Your Win Rate</p>
+              <p class="text-xs text-gray-500 mt-0.5">From your Trade Log</p>
+            </div>
+            <p class="text-2xl font-black" id="be-your-wr" style="color:#43E97B">—</p>
+          </div>
+          <div class="bg-dark rounded-xl p-4 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-gray-400">Expected Value per $1 Trade</p>
+              <p class="text-xs text-gray-500 mt-0.5">Positive = edge in your favor</p>
+            </div>
+            <p class="text-2xl font-black" id="be-ev">—</p>
+          </div>
+          <div class="bg-dark rounded-xl p-4 flex justify-between items-center">
+            <div>
+              <p class="text-xs text-gray-400">Expected Monthly Profit</p>
+              <p class="text-xs text-gray-500 mt-0.5">20 trades/day × 20 working days</p>
+            </div>
+            <p class="text-2xl font-black" id="be-monthly" style="color:#43E97B">—</p>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 mb-3">Win Rate needed vs. Payout</p>
+          <div class="h-52 relative">
+            <canvas id="be-chart"></canvas>
+          </div>
+        </div>
+      </div>
+      <!-- Verdict Box -->
+      <div id="verdict-box" class="mt-5 rounded-xl p-4 flex items-center gap-3">
+        <i id="verdict-icon" class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
+        <div>
+          <p class="font-bold text-white" id="verdict-title">Enter your details above</p>
+          <p class="text-xs text-gray-400 mt-0.5" id="verdict-desc">Fill in balance, payout, and win rate to see your analysis</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         QUICK RULES CARD
+         ═══════════════════════════════════ -->
+    <div class="bg-card border border-border rounded-2xl p-6">
+      <h3 class="font-bold text-white text-base mb-4 flex items-center gap-2">
+        <i class="fas fa-book-open text-primary text-sm"></i> Golden Rules for Pocket Option
+      </h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-3">
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-win/20 text-win flex items-center justify-center text-xs font-bold shrink-0">1</span>
+            <div><p class="text-sm font-semibold text-white">Never Risk More Than 2%</p><p class="text-xs text-gray-400 mt-0.5">$100 account → max $2 per trade. $5 account → $1 minimum (risky)</p></div>
+          </div>
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-win/20 text-win flex items-center justify-center text-xs font-bold shrink-0">2</span>
+            <div><p class="text-sm font-semibold text-white">Stop After 3 Consecutive Losses</p><p class="text-xs text-gray-400 mt-0.5">Walk away. Market may be unfavorable. Resume tomorrow fresh.</p></div>
+          </div>
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-win/20 text-win flex items-center justify-center text-xs font-bold shrink-0">3</span>
+            <div><p class="text-sm font-semibold text-white">Daily Loss Limit = 5% of Balance</p><p class="text-xs text-gray-400 mt-0.5">$100 account → stop for the day after losing $5</p></div>
+          </div>
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-win/20 text-win flex items-center justify-center text-xs font-bold shrink-0">4</span>
+            <div><p class="text-sm font-semibold text-white">Take Profit at Daily Target</p><p class="text-xs text-gray-400 mt-0.5">Reached your goal? Stop trading. Greed kills accounts.</p></div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-loss/20 text-loss flex items-center justify-center text-xs font-bold shrink-0">5</span>
+            <div><p class="text-sm font-semibold text-white">Never Chase Losses (Anti-Martingale)</p><p class="text-xs text-gray-400 mt-0.5">Doubling up after a loss is the fastest way to blow your account</p></div>
+          </div>
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-loss/20 text-loss flex items-center justify-center text-xs font-bold shrink-0">6</span>
+            <div><p class="text-sm font-semibold text-white">Trade Max 10–15 Trades Per Day</p><p class="text-xs text-gray-400 mt-0.5">Overtrading leads to emotional decisions and poor entries</p></div>
+          </div>
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-loss/20 text-loss flex items-center justify-center text-xs font-bold shrink-0">7</span>
+            <div><p class="text-sm font-semibold text-white">Build Account Before Real Trading</p><p class="text-xs text-gray-400 mt-0.5">$5 account: you're forced into 20% risk per trade. Use demo first!</p></div>
+          </div>
+          <div class="flex items-start gap-3 bg-dark rounded-xl p-3">
+            <span class="w-7 h-7 rounded-full bg-loss/20 text-loss flex items-center justify-center text-xs font-bold shrink-0">8</span>
+            <div><p class="text-sm font-semibold text-white">Track Every Trade</p><p class="text-xs text-gray-400 mt-0.5">Use this Trade Log. Patterns reveal your strengths and weaknesses.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommended Sizes Table -->
+    <div class="bg-card border border-border rounded-2xl p-6">
+      <h3 class="font-bold text-white text-base mb-4 flex items-center gap-2">
+        <i class="fas fa-table text-accent text-sm"></i> Recommended Trade Sizes by Balance
+      </h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-xs text-gray-400 border-b border-border">
+              <th class="text-left pb-3 px-4">Balance</th>
+              <th class="text-left pb-3 px-4">1% (Safe)</th>
+              <th class="text-left pb-3 px-4">2% (Standard)</th>
+              <th class="text-left pb-3 px-4">5% (Risky)</th>
+              <th class="text-left pb-3 px-4">Min Trades</th>
+              <th class="text-left pb-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border hover:bg-white/[0.02]"><td class="px-4 py-3 font-medium text-white">$5</td><td class="px-4 py-3 text-gray-400">$0.05 <span class="text-loss text-xs">(below min!)</span></td><td class="px-4 py-3 text-gray-400">$0.10 <span class="text-loss text-xs">(below min!)</span></td><td class="px-4 py-3 text-gray-400">$0.25 <span class="text-loss text-xs">(below min!)</span></td><td class="px-4 py-3 text-gray-400">5</td><td class="px-4 py-3"><span class="text-loss text-xs font-semibold">⚠️ Very Risky</span></td></tr>
+            <tr class="border-b border-border hover:bg-white/[0.02]"><td class="px-4 py-3 font-medium text-white">$10</td><td class="px-4 py-3 text-gray-400">$0.10</td><td class="px-4 py-3 text-gray-400">$0.20</td><td class="px-4 py-3 text-neutral">$0.50</td><td class="px-4 py-3 text-gray-400">10</td><td class="px-4 py-3"><span class="text-loss text-xs font-semibold">⚠️ Risky</span></td></tr>
+            <tr class="border-b border-border hover:bg-white/[0.02]"><td class="px-4 py-3 font-medium text-white">$50</td><td class="px-4 py-3 text-win">$0.50</td><td class="px-4 py-3 text-win">$1.00</td><td class="px-4 py-3 text-neutral">$2.50</td><td class="px-4 py-3 text-gray-400">50</td><td class="px-4 py-3"><span class="text-neutral text-xs font-semibold">🟡 Moderate</span></td></tr>
+            <tr class="border-b border-border hover:bg-white/[0.02]"><td class="px-4 py-3 font-medium text-white">$100</td><td class="px-4 py-3 text-win">$1.00</td><td class="px-4 py-3 text-win">$2.00</td><td class="px-4 py-3 text-neutral">$5.00</td><td class="px-4 py-3 text-gray-400">100</td><td class="px-4 py-3"><span class="text-win text-xs font-semibold">✅ Good Start</span></td></tr>
+            <tr class="border-b border-border hover:bg-white/[0.02]"><td class="px-4 py-3 font-medium text-white">$250</td><td class="px-4 py-3 text-win">$2.50</td><td class="px-4 py-3 text-win">$5.00</td><td class="px-4 py-3 text-neutral">$12.50</td><td class="px-4 py-3 text-gray-400">250</td><td class="px-4 py-3"><span class="text-win text-xs font-semibold">✅ Comfortable</span></td></tr>
+            <tr class="border-b border-border hover:bg-white/[0.02]"><td class="px-4 py-3 font-medium text-white">$500</td><td class="px-4 py-3 text-win">$5.00</td><td class="px-4 py-3 text-win">$10.00</td><td class="px-4 py-3 text-neutral">$25.00</td><td class="px-4 py-3 text-gray-400">500</td><td class="px-4 py-3"><span class="text-win text-xs font-semibold">✅ Professional</span></td></tr>
+            <tr class="hover:bg-white/[0.02]"><td class="px-4 py-3 font-medium text-white">$1000</td><td class="px-4 py-3 text-win">$10.00</td><td class="px-4 py-3 text-win">$20.00</td><td class="px-4 py-3 text-neutral">$50.00</td><td class="px-4 py-3 text-gray-400">1000</td><td class="px-4 py-3"><span class="text-win text-xs font-semibold">✅ Excellent</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-xs text-gray-500 mt-3">* Pocket Option minimum trade = $1. Values below $1 are shown for reference only.</p>
+    </div>
+
+  </div><!-- end p-8 -->
+</main>
+
+<!-- ═══ Breakeven chart background canvas ═══ -->
+<script src="app.js"></script>
+<script>
+// ══════════════════════════════════════
+// RISK MANAGER PAGE LOGIC
+// ══════════════════════════════════════
+let currentStrategy = 'fixed';
+let beChartInst = null;
+
+function initRiskManager() {
+  syncSidebar();
+
+  // Load from settings
+  const s = getSettings();
+  const trades = getTrades();
+  const wins  = trades.filter(t => t.result === 'win');
+  const realWR = trades.length ? ((wins.length / trades.length) * 100).toFixed(1) : '';
+
+  document.getElementById('rm-balance').value = s.balance || '';
+  document.getElementById('rm-payout').value  = s.payout  || 80;
+  document.getElementById('rm-winrate').value  = realWR    || 60;
+
+  // Header balance
+  const totalProfit = trades.reduce((a, t) => a + t.profit, 0);
+  const bal = parseFloat(s.balance) + totalProfit;
+  const hb  = document.getElementById('header-balance');
+  if (hb) hb.textContent = '$' + bal.toFixed(2);
+
+  onInputChange();
+  calcMartingale();
+  calcFibonacci();
+}
+
+function onInputChange() {
+  const balance = parseFloat(document.getElementById('rm-balance').value) || 0;
+  const payout  = parseFloat(document.getElementById('rm-payout').value)  || 80;
+  const winrate = parseFloat(document.getElementById('rm-winrate').value) || 60;
+
+  // Small account warning
+  const warn = document.getElementById('small-account-warning');
+  if (warn) warn.classList.toggle('hidden', balance >= 50 || balance === 0);
+
+  calcFixed(balance, payout, winrate);
+  calcKelly(balance, payout, winrate);
+  calcBreakeven(balance, payout, winrate);
+  updateCustomPct(document.getElementById('custom-pct')?.value || 2);
+  calcMartingale();
+  calcFibonacci();
+}
+
+function calcFixed(balance, payout, winrate) {
+  const safe = Math.max(1, balance * 0.01);
+  const mod  = Math.max(1, balance * 0.02);
+  const agg  = Math.max(1, balance * 0.05);
+  const max  = Math.max(1, balance * 0.10);
+  const fmt2 = v => '$' + v.toFixed(2);
+  setTxt('fixed-safe', fmt2(safe));
+  setTxt('fixed-mod',  fmt2(mod));
+  setTxt('fixed-agg',  fmt2(agg));
+  setTxt('fixed-max',  fmt2(max));
+}
+
+function updateCustomPct(pct) {
+  pct = parseFloat(pct);
+  const balance = parseFloat(document.getElementById('rm-balance').value) || 100;
+  const payout  = parseFloat(document.getElementById('rm-payout').value)  || 80;
+  const amt     = Math.max(1, balance * pct / 100);
+  const profitWin  =  amt * payout / 100;
+  const profitLoss = -amt;
+  const tradesBust = Math.floor(balance / amt);
+  const after10    = balance - amt * 10;
+
+  const lbl = document.getElementById('custom-pct-label');
+  if (lbl) {
+    lbl.textContent = pct + '%';
+    lbl.style.color = pct <= 2 ? '#43E97B' : pct <= 5 ? '#F0B429' : '#FF4C6A';
+  }
+
+  setTxt('custom-trade-amt', '$' + amt.toFixed(2));
+  const ctaEl = document.getElementById('custom-trade-amt');
+  if (ctaEl) ctaEl.style.color = pct <= 2 ? '#43E97B' : pct <= 5 ? '#F0B429' : '#FF4C6A';
+
+  setTxt('custom-profit-win',  '+$' + profitWin.toFixed(2));
+  setTxt('custom-profit-loss', '-$' + amt.toFixed(2));
+  setTxt('custom-trades-bust', tradesBust);
+  setTxt('custom-after-loss',  '$' + Math.max(0, after10).toFixed(2));
+
+  const rlEl = document.getElementById('custom-risk-label');
+  if (rlEl) {
+    if (pct <= 1)       { rlEl.textContent = 'Very Safe';  rlEl.className = 'text-sm font-bold text-[#43E97B]'; }
+    else if (pct <= 2)  { rlEl.textContent = 'Safe';       rlEl.className = 'text-sm font-bold text-[#43E97B]'; }
+    else if (pct <= 5)  { rlEl.textContent = 'Moderate';   rlEl.className = 'text-sm font-bold text-[#F0B429]'; }
+    else if (pct <= 10) { rlEl.textContent = 'High Risk';  rlEl.className = 'text-sm font-bold text-[#FF4C6A]'; }
+    else                { rlEl.textContent = 'DANGER!';    rlEl.className = 'text-sm font-bold text-[#FF4C6A]'; }
+  }
+}
+
+function calcKelly(balance, payout, winrate) {
+  const p = winrate / 100;
+  const q = 1 - p;
+  const b = payout / 100;
+  const kelly = (b * p - q) / b;
+  const half  = kelly / 2;
+  const quarter = kelly / 4;
+
+  const fmtPct = v => (v * 100).toFixed(2) + '%';
+  const fmtAmt = v => '$' + (Math.max(0, v) * balance).toFixed(2);
+
+  setTxt('kelly-p', p.toFixed(2));
+  setTxt('kelly-q', q.toFixed(2));
+  setTxt('kelly-b', b.toFixed(2));
+
+  setTxt('kelly-full-pct',    fmtPct(kelly));
+  setTxt('kelly-full-amt',    kelly > 0 ? fmtAmt(kelly) : 'No edge');
+  setTxt('kelly-half-pct',    fmtPct(half));
+  setTxt('kelly-half-amt',    half > 0  ? fmtAmt(half)  : 'No edge');
+  setTxt('kelly-quarter-pct', fmtPct(quarter));
+  setTxt('kelly-quarter-amt', quarter > 0 ? fmtAmt(quarter) : 'No edge');
+
+  const edgeBox   = document.getElementById('kelly-edge-box');
+  const edgeLbl   = document.getElementById('kelly-edge-label');
+  const edgeDesc  = document.getElementById('kelly-edge-desc');
+  if (edgeBox && edgeLbl && edgeDesc) {
+    if (kelly > 0) {
+      edgeBox.style.background = 'rgba(67,233,123,0.08)';
+      edgeBox.style.border     = '1px solid rgba(67,233,123,0.3)';
+      edgeLbl.innerHTML = `✅ You have a <strong>positive edge</strong>! Kelly = ${fmtPct(kelly)}`;
+      edgeLbl.style.color = '#43E97B';
+      edgeDesc.textContent = `At ${winrate}% win rate with ${payout}% payout, you are mathematically profitable. Use Half Kelly: ${fmtAmt(half)} per trade.`;
+    } else {
+      edgeBox.style.background = 'rgba(255,76,106,0.08)';
+      edgeBox.style.border     = '1px solid rgba(255,76,106,0.3)';
+      edgeLbl.innerHTML = `❌ <strong>No mathematical edge.</strong> Kelly is negative (${fmtPct(kelly)})`;
+      edgeLbl.style.color = '#FF4C6A';
+      const be = (100 / (100 + payout)).toFixed(1);
+      edgeDesc.textContent = `You need a win rate above ${(be * 100).toFixed(1)}% to profit at ${payout}% payout. Current: ${winrate}%. Practice more!`;
+    }
+  }
+}
+
+function calcBreakeven(balance, payout, winrate) {
+  const be = 100 / (100 + payout);
+  setTxt('be-winrate', (be * 100).toFixed(1) + '%');
+
+  const wrEl = document.getElementById('be-your-wr');
+  if (wrEl) {
+    wrEl.textContent = winrate ? winrate + '%' : '—';
+    wrEl.style.color = winrate >= be * 100 ? '#43E97B' : '#FF4C6A';
+  }
+
+  const p = winrate / 100;
+  const q = 1 - p;
+  const ev = (p * (payout / 100) - q).toFixed(4);
+  const evEl = document.getElementById('be-ev');
+  if (evEl) {
+    evEl.textContent = ev > 0 ? '+$' + ev : '$' + ev;
+    evEl.style.color = ev > 0 ? '#43E97B' : '#FF4C6A';
+  }
+
+  // Expected monthly (20 trades/day × 20 days = 400 trades)
+  const tradeAmt   = Math.max(1, balance * 0.02); // 2% rule
+  const monthlyEV  = parseFloat(ev) * tradeAmt * 400;
+  const mEl = document.getElementById('be-monthly');
+  if (mEl) {
+    mEl.textContent = (monthlyEV >= 0 ? '+$' : '-$') + Math.abs(monthlyEV).toFixed(2);
+    mEl.style.color = monthlyEV >= 0 ? '#43E97B' : '#FF4C6A';
+  }
+
+  // Verdict
+  const vBox  = document.getElementById('verdict-box');
+  const vIcon = document.getElementById('verdict-icon');
+  const vTitle= document.getElementById('verdict-title');
+  const vDesc = document.getElementById('verdict-desc');
+  if (vBox && vIcon && vTitle && vDesc && winrate) {
+    if (parseFloat(ev) > 0) {
+      vBox.style.background = 'rgba(67,233,123,0.08)'; vBox.style.border = '1px solid rgba(67,233,123,0.3)';
+      vIcon.className = 'fas fa-circle-check text-[#43E97B] text-2xl';
+      vTitle.textContent = '🎉 You are PROFITABLE! Keep following the rules.';
+      vDesc.textContent = `With ${winrate}% win rate at ${payout}% payout, you earn $${Math.abs(ev)} per $1 risked. Use 2% rule and stay consistent.`;
+    } else {
+      vBox.style.background = 'rgba(255,76,106,0.08)'; vBox.style.border = '1px solid rgba(255,76,106,0.3)';
+      vIcon.className = 'fas fa-circle-xmark text-[#FF4C6A] text-2xl';
+      vTitle.textContent = '⚠️ Your win rate is below breakeven. Keep practicing!';
+      vDesc.textContent = `You need >${(be * 100).toFixed(1)}% win rate at ${payout}% payout. Current: ${winrate}%. Use demo account until you hit the breakeven rate.`;
+    }
+  }
+
+  // Breakeven Chart
+  renderBEChart();
+}
+
+function renderBEChart() {
+  const ctx = document.getElementById('be-chart');
+  if (!ctx) return;
+  const payouts = [60, 70, 75, 80, 85, 90];
+  const bes     = payouts.map(p => parseFloat((100 / (100 + p)).toFixed(3)) * 100);
+  const userPO  = parseFloat(document.getElementById('rm-payout').value) || 80;
+  const userBE  = (100 / (100 + userPO)).toFixed(1);
+  const userWR  = parseFloat(document.getElementById('rm-winrate').value) || 0;
+  if (beChartInst) beChartInst.destroy();
+  beChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: payouts.map(p => p + '% payout'),
+      datasets: [
+        {
+          label: 'Breakeven Win Rate',
+          data: bes,
+          backgroundColor: bes.map((b, i) => payouts[i] === userPO ? 'rgba(108,99,255,0.8)' : 'rgba(108,99,255,0.3)'),
+          borderColor: 'rgba(108,99,255,0.9)',
+          borderWidth: 1, borderRadius: 6,
+        },
+        userWR ? {
+          label: 'Your Win Rate',
+          data: payouts.map(() => userWR),
+          type: 'line',
+          borderColor: userWR > parseFloat(userBE) ? '#43E97B' : '#FF4C6A',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+        } : null
+      ].filter(Boolean)
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { backgroundColor:'#12162A', borderColor:'#1E2340', borderWidth:1, titleColor:'#fff', bodyColor:'#9CA3AF' }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(30,35,64,.5)' }, ticks: { color: '#6B7280', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(30,35,64,.5)' }, ticks: { color: '#6B7280', font: { size: 10 }, callback: v => v + '%' }, min: 30, max: 70 }
+      }
+    }
+  });
+}
+
+function calcMartingale() {
+  const balance = parseFloat(document.getElementById('rm-balance').value) || 100;
+  const start   = parseFloat(document.getElementById('mart-start')?.value) || 1;
+  const mult    = parseFloat(document.getElementById('mart-mult')?.value)  || 2;
+  const tbody   = document.getElementById('mart-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  let total = 0, bet = start;
+  for (let i = 1; i <= 10; i++) {
+    total += bet;
+    const remaining = Math.max(0, balance - total);
+    const pct = ((bet / balance) * 100).toFixed(1);
+    const totalPct = ((total / balance) * 100).toFixed(1);
+    const danger = totalPct > 50;
+    const warn   = totalPct > 25;
+    const color  = danger ? 'text-[#FF4C6A]' : warn ? 'text-[#F0B429]' : 'text-[#43E97B]';
+    const badge  = danger
+      ? '<span class="text-xs px-2 py-0.5 rounded-full bg-[#FF4C6A]/15 text-[#FF4C6A] border border-[#FF4C6A]/30 font-semibold">DANGER</span>'
+      : warn
+      ? '<span class="text-xs px-2 py-0.5 rounded-full bg-[#F0B429]/15 text-[#F0B429] border border-[#F0B429]/30 font-semibold">CAUTION</span>'
+      : '<span class="text-xs px-2 py-0.5 rounded-full bg-[#43E97B]/15 text-[#43E97B] border border-[#43E97B]/30 font-semibold">OK</span>';
+    const bustRow = remaining < start ? ' style="opacity:0.4"' : '';
+    tbody.innerHTML += `
+      <tr class="mart-row border-b border-[#1E2340]"${bustRow}>
+        <td class="px-3 py-3 font-bold text-white">L${i}</td>
+        <td class="px-3 py-3 font-bold ${color}">$${bet.toFixed(2)}</td>
+        <td class="px-3 py-3 text-gray-300">$${total.toFixed(2)}</td>
+        <td class="px-3 py-3 ${remaining === 0 ? 'text-[#FF4C6A] font-bold' : 'text-gray-300'}">$${remaining.toFixed(2)}</td>
+        <td class="px-3 py-3 ${color} font-semibold">${totalPct}%</td>
+        <td class="px-3 py-3">${badge}${remaining < start ? ' <span class="text-xs text-[#FF4C6A] ml-1">Can\'t continue!</span>' : ''}</td>
+      </tr>`;
+    if (remaining < start) break;
+    bet = Math.min(bet * mult, balance);
+  }
+}
+
+function calcFibonacci() {
+  const balance = parseFloat(document.getElementById('rm-balance').value) || 100;
+  const base    = parseFloat(document.getElementById('fib-base')?.value)  || 1;
+  const tbody   = document.getElementById('fib-tbody');
+  if (!tbody) return;
+  const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+  tbody.innerHTML = '';
+  let total = 0;
+  for (let i = 0; i < fib.length; i++) {
+    const amt = fib[i] * base;
+    total += amt;
+    const pct = ((amt / balance) * 100).toFixed(1);
+    const color = pct > 10 ? 'text-[#FF4C6A]' : pct > 5 ? 'text-[#F0B429]' : 'text-[#43E97B]';
+    if (amt > balance) break;
+    tbody.innerHTML += `
+      <tr class="mart-row border-b border-[#1E2340]">
+        <td class="px-3 py-3 font-bold text-white">Step ${i + 1}</td>
+        <td class="px-3 py-3 text-gray-300">${fib[i]}</td>
+        <td class="px-3 py-3 font-bold ${color}">$${amt.toFixed(2)}</td>
+        <td class="px-3 py-3 text-gray-300">$${total.toFixed(2)}</td>
+        <td class="px-3 py-3 ${color} font-semibold">${pct}%</td>
+      </tr>`;
+  }
+}
+
+function setStrategy(name) {
+  currentStrategy = name;
+  ['fixed','kelly','martingale','fibonacci'].forEach(s => {
+    document.getElementById('btn-' + s)?.classList.toggle('active', s === name);
+    document.getElementById('panel-' + s)?.classList.toggle('hidden', s !== name);
+  });
+}
+
+function setTxt(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+
+// Boot
+initRiskManager();
+</script>
+</body>
+</html>

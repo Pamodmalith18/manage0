@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PocketPro – Analytics</title>
+  <meta name="description" content="Deep analytics and insights for your Pocket Option trades."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6C63FF', secondary: '#FF6584', accent: '#43E97B',
+            dark: '#0D0F1A', darker: '#080A12', card: '#12162A',
+            border: '#1E2340', win: '#43E97B', loss: '#FF4C6A', neutral: '#F0B429',
+          },
+          fontFamily: { inter: ['Inter', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-darker font-inter text-white min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 flex flex-col">
+    <div class="p-6 border-b border-border">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+          <i class="fas fa-chart-line text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-white">PocketPro</h1>
+          <p class="text-xs text-gray-400">Trade Manager</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+      <a href="index.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-grid-2 w-5 text-center"></i> Dashboard
+      </a>
+      <a href="trades.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-list-check w-5 text-center"></i> Trade Log
+      </a>
+      <a href="analytics.html" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-chart-bar w-5 text-center"></i> Analytics
+      </a>
+      <a href="settings.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-gear w-5 text-center"></i> Settings
+      </a>
+    </nav>
+    <div class="p-4 border-t border-border">
+      <div class="bg-dark rounded-xl p-3 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-sm font-bold">H</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-white truncate" id="sidebar-username">Hari</p>
+          <p class="text-xs text-gray-400">Trader</p>
+        </div>
+        <i class="fas fa-circle text-accent text-xs"></i>
+      </div>
+    </div>
+  </aside>
+
+  <main class="ml-64 min-h-screen">
+    <header class="sticky top-0 z-40 bg-darker/80 backdrop-blur-xl border-b border-border px-8 py-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-white">Analytics</h2>
+        <p class="text-sm text-gray-400">Deep insights into your trading performance</p>
+      </div>
+    </header>
+
+    <div class="p-8 space-y-6">
+
+      <!-- Performance Summary Cards -->
+      <div class="grid grid-cols-3 gap-6">
+        <div class="bg-card border border-border rounded-2xl p-5">
+          <p class="text-xs text-gray-400 mb-1">Best Trade</p>
+          <p class="text-2xl font-bold text-win" id="an-best">$0.00</p>
+          <p class="text-xs text-gray-500 mt-1">Highest single profit</p>
+        </div>
+        <div class="bg-card border border-border rounded-2xl p-5">
+          <p class="text-xs text-gray-400 mb-1">Worst Trade</p>
+          <p class="text-2xl font-bold text-loss" id="an-worst">$0.00</p>
+          <p class="text-xs text-gray-500 mt-1">Biggest single loss</p>
+        </div>
+        <div class="bg-card border border-border rounded-2xl p-5">
+          <p class="text-xs text-gray-400 mb-1">Avg Profit/Trade</p>
+          <p class="text-2xl font-bold text-white" id="an-avg">$0.00</p>
+          <p class="text-xs text-gray-500 mt-1">Average per trade</p>
+        </div>
+        <div class="bg-card border border-border rounded-2xl p-5">
+          <p class="text-xs text-gray-400 mb-1">Total Invested</p>
+          <p class="text-2xl font-bold text-primary" id="an-invested">$0.00</p>
+          <p class="text-xs text-gray-500 mt-1">Sum of all trade amounts</p>
+        </div>
+        <div class="bg-card border border-border rounded-2xl p-5">
+          <p class="text-xs text-gray-400 mb-1">Max Win Streak</p>
+          <p class="text-2xl font-bold text-win" id="an-max-win-streak">0</p>
+          <p class="text-xs text-gray-500 mt-1">Consecutive wins</p>
+        </div>
+        <div class="bg-card border border-border rounded-2xl p-5">
+          <p class="text-xs text-gray-400 mb-1">Max Loss Streak</p>
+          <p class="text-2xl font-bold text-loss" id="an-max-loss-streak">0</p>
+          <p class="text-xs text-gray-500 mt-1">Consecutive losses</p>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="grid grid-cols-2 gap-6">
+        <!-- Cumulative Profit Line Chart -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h3 class="font-bold text-white mb-1">Cumulative Profit</h3>
+          <p class="text-xs text-gray-400 mb-4">Growing balance over all trades</p>
+          <div class="h-52 relative">
+            <canvas id="an-profit-chart"></canvas>
+            <div id="an-no-data-1" class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">No data yet</div>
+          </div>
+        </div>
+
+        <!-- Daily P&L Bar Chart -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h3 class="font-bold text-white mb-1">Daily Profit/Loss</h3>
+          <p class="text-xs text-gray-400 mb-4">Profit per day</p>
+          <div class="h-52 relative">
+            <canvas id="an-daily-chart"></canvas>
+            <div id="an-no-data-2" class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">No data yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="grid grid-cols-3 gap-6">
+        <!-- Asset Performance -->
+        <div class="bg-card border border-border rounded-2xl p-6 col-span-2">
+          <h3 class="font-bold text-white mb-1">Asset Performance</h3>
+          <p class="text-xs text-gray-400 mb-4">Win rate by asset pair</p>
+          <div id="asset-perf-list" class="space-y-3">
+            <div class="text-center text-gray-500 text-sm py-6">No trades yet</div>
+          </div>
+        </div>
+
+        <!-- Trade Distribution Doughnut -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h3 class="font-bold text-white mb-1">Duration Split</h3>
+          <p class="text-xs text-gray-400 mb-4">Trades by duration</p>
+          <div class="h-44 relative flex items-center justify-center">
+            <canvas id="an-duration-chart"></canvas>
+            <div id="an-no-data-3" class="absolute inset-0 flex items-center justify-center text-gray-500 text-sm text-center">No data yet</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>initAnalytics();</script>
+</body>
+</html>

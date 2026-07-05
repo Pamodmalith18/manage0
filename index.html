@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PocketPro – Trading Dashboard</title>
+  <meta name="description" content="Track your Pocket Option trades, wins, losses, and profits with PocketPro Trading Manager."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6C63FF',
+            secondary: '#FF6584',
+            accent: '#43E97B',
+            dark: '#0D0F1A',
+            darker: '#080A12',
+            card: '#12162A',
+            border: '#1E2340',
+            win: '#43E97B',
+            loss: '#FF4C6A',
+            neutral: '#F0B429',
+          },
+          fontFamily: { inter: ['Inter', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-darker font-inter text-white min-h-screen">
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 flex flex-col transition-all duration-300">
+    <div class="p-6 border-b border-border">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+          <i class="fas fa-chart-line text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-white">PocketPro</h1>
+          <p class="text-xs text-gray-400">Trade Manager</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+      <a href="index.html" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-grid-2 w-5 text-center"></i> Dashboard
+      </a>
+      <a href="trades.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-list-check w-5 text-center"></i> Trade Log
+      </a>
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-chart-bar w-5 text-center"></i> Analytics
+      </a>
+      <a href="settings.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-gear w-5 text-center"></i> Settings
+      </a>
+    </nav>
+    <div class="p-4 border-t border-border">
+      <div class="bg-dark rounded-xl p-3 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-sm font-bold">H</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-white truncate" id="sidebar-username">Hari</p>
+          <p class="text-xs text-gray-400">Trader</p>
+        </div>
+        <i class="fas fa-circle text-accent text-xs"></i>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="ml-64 min-h-screen">
+    <!-- Top Bar -->
+    <header class="sticky top-0 z-40 bg-darker/80 backdrop-blur-xl border-b border-border px-8 py-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-white">Dashboard</h2>
+        <p class="text-sm text-gray-400" id="current-date"></p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative">
+          <input id="search-input" type="text" placeholder="Search trades..." class="bg-card border border-border text-white text-sm rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-primary w-48 transition-all focus:w-64"/>
+          <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+        </div>
+        <button onclick="window.location='trades.html#add'" class="bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/30 flex items-center gap-2">
+          <i class="fas fa-plus"></i> New Trade
+        </button>
+      </div>
+    </header>
+
+    <div class="p-8 space-y-8">
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-4 gap-6">
+        <div class="stat-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full -translate-y-6 translate-x-6 blur-xl"></div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-11 h-11 rounded-xl bg-primary/20 flex items-center justify-center">
+              <i class="fas fa-wallet text-primary"></i>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="api-badge" class="hidden text-xs font-semibold px-2 py-0.5 rounded-full"
+                style="background:rgba(67,233,123,0.15);color:#43E97B;border:1px solid rgba(67,233,123,0.3)">
+                <i class="fas fa-signal text-[9px]"></i> LIVE
+              </span>
+              <button onclick="manualRefreshBalance()" title="Refresh Balance"
+                class="w-7 h-7 rounded-lg bg-dark hover:bg-primary/20 text-gray-400 hover:text-primary transition-all flex items-center justify-center">
+                <i class="fas fa-rotate-right text-xs" id="refresh-icon"></i>
+              </button>
+            </div>
+          </div>
+          <p class="text-2xl font-bold text-white" id="stat-balance">$0.00</p>
+          <p class="text-sm text-gray-400 mt-1">Current Balance</p>
+          <p class="text-xs text-accent mt-2 flex items-center gap-1" id="stat-balance-change"><i class="fas fa-arrow-up"></i> <span>0.00%</span></p>
+          <p class="text-[10px] text-gray-600 mt-1" id="balance-last-updated"></p>
+        </div>
+
+        <div class="stat-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden hover:border-win/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-win/10">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-win/10 rounded-full -translate-y-6 translate-x-6 blur-xl"></div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-11 h-11 rounded-xl bg-win/20 flex items-center justify-center">
+              <i class="fas fa-trophy text-win"></i>
+            </div>
+            <span class="text-xs text-gray-400 bg-dark px-2 py-1 rounded-lg">Win Rate</span>
+          </div>
+          <p class="text-2xl font-bold text-white" id="stat-winrate">0%</p>
+          <p class="text-sm text-gray-400 mt-1">Win Percentage</p>
+          <p class="text-xs text-win mt-2 flex items-center gap-1" id="stat-wins-count"><i class="fas fa-check-circle"></i> <span>0 Wins</span></p>
+        </div>
+
+        <div class="stat-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden hover:border-accent/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-accent/10">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-accent/10 rounded-full -translate-y-6 translate-x-6 blur-xl"></div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-11 h-11 rounded-xl bg-accent/20 flex items-center justify-center">
+              <i class="fas fa-dollar-sign text-accent"></i>
+            </div>
+            <span class="text-xs text-gray-400 bg-dark px-2 py-1 rounded-lg">Profit</span>
+          </div>
+          <p class="text-2xl font-bold text-white" id="stat-profit">$0.00</p>
+          <p class="text-sm text-gray-400 mt-1">Total Profit/Loss</p>
+          <p class="text-xs mt-2 flex items-center gap-1" id="stat-profit-sub"><i class="fas fa-chart-line"></i> <span>All trades</span></p>
+        </div>
+
+        <div class="stat-card bg-card border border-border rounded-2xl p-6 relative overflow-hidden hover:border-secondary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-secondary/10">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-secondary/10 rounded-full -translate-y-6 translate-x-6 blur-xl"></div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-11 h-11 rounded-xl bg-secondary/20 flex items-center justify-center">
+              <i class="fas fa-fire text-secondary"></i>
+            </div>
+            <span class="text-xs text-gray-400 bg-dark px-2 py-1 rounded-lg">Streak</span>
+          </div>
+          <p class="text-2xl font-bold text-white" id="stat-streak">0</p>
+          <p class="text-sm text-gray-400 mt-1">Current Streak</p>
+          <p class="text-xs text-secondary mt-2 flex items-center gap-1" id="stat-total-trades"><i class="fas fa-repeat"></i> <span>0 Total</span></p>
+        </div>
+      </div>
+
+      <!-- Chart + Recent Trades -->
+      <div class="grid grid-cols-3 gap-6">
+        <!-- Profit Chart -->
+        <div class="col-span-2 bg-card border border-border rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="font-bold text-white text-lg">Profit Overview</h3>
+              <p class="text-sm text-gray-400">Cumulative profit over trades</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="setChartFilter('all')" id="filter-all" class="chart-filter-btn active text-xs px-3 py-1.5 rounded-lg transition-all">All</button>
+              <button onclick="setChartFilter('week')" id="filter-week" class="chart-filter-btn text-xs px-3 py-1.5 rounded-lg transition-all">Week</button>
+              <button onclick="setChartFilter('month')" id="filter-month" class="chart-filter-btn text-xs px-3 py-1.5 rounded-lg transition-all">Month</button>
+            </div>
+          </div>
+          <div class="relative h-56">
+            <canvas id="profitChart"></canvas>
+            <div id="no-chart-data" class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 hidden">
+              <i class="fas fa-chart-line text-4xl mb-2 opacity-30"></i>
+              <p class="text-sm">No trades yet. Add your first trade!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Win/Loss Pie -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h3 class="font-bold text-white text-lg mb-1">Win/Loss Ratio</h3>
+          <p class="text-sm text-gray-400 mb-6">Trade outcome breakdown</p>
+          <div class="relative h-40 flex items-center justify-center">
+            <canvas id="winLossChart"></canvas>
+            <div id="no-pie-data" class="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
+              <i class="fas fa-pie-chart text-4xl mb-2 opacity-20"></i>
+              <p class="text-xs text-center">No trades yet</p>
+            </div>
+          </div>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center justify-between text-sm">
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-win inline-block"></span><span class="text-gray-300">Wins</span></div>
+              <span class="font-semibold text-win" id="pie-wins">0</span>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-loss inline-block"></span><span class="text-gray-300">Losses</span></div>
+              <span class="font-semibold text-loss" id="pie-losses">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Trades Table -->
+      <div class="bg-card border border-border rounded-2xl p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="font-bold text-white text-lg">Recent Trades</h3>
+            <p class="text-sm text-gray-400">Your last 5 trades</p>
+          </div>
+          <a href="trades.html" class="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1">View All <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+        <div id="recent-trades-table">
+          <div id="no-trades-msg" class="text-center py-12 text-gray-500">
+            <i class="fas fa-inbox text-4xl mb-3 opacity-30"></i>
+            <p class="text-sm">No trades recorded yet.</p>
+            <a href="trades.html#add" class="text-primary text-sm hover:underline mt-1 inline-block">Add your first trade →</a>
+          </div>
+          <table id="trades-table" class="w-full hidden">
+            <thead>
+              <tr class="text-xs text-gray-400 border-b border-border">
+                <th class="text-left pb-3 font-medium">Asset</th>
+                <th class="text-left pb-3 font-medium">Direction</th>
+                <th class="text-left pb-3 font-medium">Amount</th>
+                <th class="text-left pb-3 font-medium">Profit</th>
+                <th class="text-left pb-3 font-medium">Result</th>
+                <th class="text-left pb-3 font-medium">Date</th>
+              </tr>
+            </thead>
+            <tbody id="trades-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    initDashboard();
+  </script>
+</body>
+</html>

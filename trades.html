@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PocketPro – Trade Log</title>
+  <meta name="description" content="Log and track all your Pocket Option trades with PocketPro."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6C63FF', secondary: '#FF6584', accent: '#43E97B',
+            dark: '#0D0F1A', darker: '#080A12', card: '#12162A',
+            border: '#1E2340', win: '#43E97B', loss: '#FF4C6A', neutral: '#F0B429',
+          },
+          fontFamily: { inter: ['Inter', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-darker font-inter text-white min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 flex flex-col">
+    <div class="p-6 border-b border-border">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+          <i class="fas fa-chart-line text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-white">PocketPro</h1>
+          <p class="text-xs text-gray-400">Trade Manager</p>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-4 space-y-1">
+      <a href="index.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-grid-2 w-5 text-center"></i> Dashboard
+      </a>
+      <a href="trades.html" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-list-check w-5 text-center"></i> Trade Log
+      </a>
+      <a href="analytics.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-chart-bar w-5 text-center"></i> Analytics
+      </a>
+      <a href="settings.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200">
+        <i class="fas fa-gear w-5 text-center"></i> Settings
+      </a>
+    </nav>
+    <div class="p-4 border-t border-border">
+      <div class="bg-dark rounded-xl p-3 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-sm font-bold">H</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-white truncate" id="sidebar-username">Hari</p>
+          <p class="text-xs text-gray-400">Trader</p>
+        </div>
+        <i class="fas fa-circle text-accent text-xs"></i>
+      </div>
+    </div>
+  </aside>
+
+  <main class="ml-64 min-h-screen">
+    <header class="sticky top-0 z-40 bg-darker/80 backdrop-blur-xl border-b border-border px-8 py-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-white">Trade Log</h2>
+        <p class="text-sm text-gray-400">Record and manage all your trades</p>
+      </div>
+      <button onclick="openModal()" class="bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/30 flex items-center gap-2" id="add-trade-btn">
+        <i class="fas fa-plus"></i> Add Trade
+      </button>
+    </header>
+
+    <div class="p-8 space-y-6">
+
+      <!-- Quick Stats Bar -->
+      <div class="grid grid-cols-4 gap-4">
+        <div class="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center"><i class="fas fa-repeat text-primary text-sm"></i></div>
+          <div><p class="text-xs text-gray-400">Total Trades</p><p class="font-bold text-white" id="log-total">0</p></div>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-win/20 flex items-center justify-center"><i class="fas fa-check text-win text-sm"></i></div>
+          <div><p class="text-xs text-gray-400">Total Wins</p><p class="font-bold text-win" id="log-wins">0</p></div>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-loss/20 flex items-center justify-center"><i class="fas fa-times text-loss text-sm"></i></div>
+          <div><p class="text-xs text-gray-400">Total Losses</p><p class="font-bold text-loss" id="log-losses">0</p></div>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center"><i class="fas fa-dollar-sign text-accent text-sm"></i></div>
+          <div><p class="text-xs text-gray-400">Net Profit</p><p class="font-bold" id="log-profit">$0.00</p></div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-card border border-border rounded-2xl p-4 flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-2 flex-1 min-w-48">
+          <i class="fas fa-search text-gray-400 text-sm"></i>
+          <input id="trade-search" type="text" placeholder="Search by asset..." class="bg-transparent text-white text-sm outline-none flex-1 placeholder-gray-500"/>
+        </div>
+        <select id="filter-result" class="bg-dark border border-border text-white text-sm rounded-lg px-3 py-2 outline-none cursor-pointer">
+          <option value="all">All Results</option>
+          <option value="win">Wins Only</option>
+          <option value="loss">Losses Only</option>
+        </select>
+        <select id="filter-direction" class="bg-dark border border-border text-white text-sm rounded-lg px-3 py-2 outline-none cursor-pointer">
+          <option value="all">All Directions</option>
+          <option value="call">CALL (Up)</option>
+          <option value="put">PUT (Down)</option>
+        </select>
+        <select id="filter-sort" class="bg-dark border border-border text-white text-sm rounded-lg px-3 py-2 outline-none cursor-pointer">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="profit-high">Highest Profit</option>
+          <option value="profit-low">Lowest Profit</option>
+        </select>
+        <button onclick="clearFilters()" class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+          <i class="fas fa-rotate-left"></i> Reset
+        </button>
+      </div>
+
+      <!-- Trades Table -->
+      <div class="bg-card border border-border rounded-2xl overflow-hidden">
+        <div id="no-trades-msg" class="text-center py-20 text-gray-500">
+          <i class="fas fa-inbox text-5xl mb-4 opacity-20"></i>
+          <p class="text-base font-medium">No trades logged yet</p>
+          <p class="text-sm mt-1">Click "Add Trade" to log your first trade</p>
+        </div>
+        <table id="main-trades-table" class="w-full hidden">
+          <thead class="border-b border-border">
+            <tr class="text-xs text-gray-400 font-medium">
+              <th class="text-left px-6 py-4">#</th>
+              <th class="text-left px-6 py-4">Asset</th>
+              <th class="text-left px-6 py-4">Direction</th>
+              <th class="text-left px-6 py-4">Amount</th>
+              <th class="text-left px-6 py-4">Payout %</th>
+              <th class="text-left px-6 py-4">Profit/Loss</th>
+              <th class="text-left px-6 py-4">Result</th>
+              <th class="text-left px-6 py-4">Time</th>
+              <th class="text-left px-6 py-4">Date</th>
+              <th class="text-left px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="main-trades-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Trade Modal -->
+  <div id="trade-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-card border border-border rounded-2xl w-full max-w-lg shadow-2xl">
+      <div class="flex items-center justify-between p-6 border-b border-border">
+        <div>
+          <h3 class="text-lg font-bold text-white" id="modal-title">Add New Trade</h3>
+          <p class="text-sm text-gray-400">Record your trade details</p>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-dark hover:bg-border flex items-center justify-center transition-colors">
+          <i class="fas fa-times text-gray-400"></i>
+        </button>
+      </div>
+      <form id="trade-form" class="p-6 space-y-4" onsubmit="saveTrade(event)">
+        <input type="hidden" id="edit-trade-id"/>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Asset / Currency Pair</label>
+            <input id="trade-asset" type="text" placeholder="e.g. EUR/USD, BTC/USD" required
+              class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors placeholder-gray-500"/>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Trade Direction</label>
+            <select id="trade-direction" required class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors cursor-pointer">
+              <option value="">Select direction</option>
+              <option value="call">📈 CALL (Up)</option>
+              <option value="put">📉 PUT (Down)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Investment Amount ($)</label>
+            <input id="trade-amount" type="number" step="0.01" min="0.01" placeholder="e.g. 10.00" required
+              class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors placeholder-gray-500"/>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Payout % (e.g. 80)</label>
+            <input id="trade-payout" type="number" step="1" min="1" max="200" placeholder="e.g. 80" required
+              class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors placeholder-gray-500"/>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Trade Result</label>
+            <select id="trade-result" required class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors cursor-pointer" onchange="updateProfit()">
+              <option value="">Select result</option>
+              <option value="win">✅ WIN</option>
+              <option value="loss">❌ LOSS</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Trade Duration</label>
+            <select id="trade-duration" class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors cursor-pointer">
+              <option value="30s">30 Seconds</option>
+              <option value="1m">1 Minute</option>
+              <option value="2m">2 Minutes</option>
+              <option value="5m">5 Minutes</option>
+              <option value="10m">10 Minutes</option>
+              <option value="15m">15 Minutes</option>
+              <option value="30m">30 Minutes</option>
+              <option value="1h">1 Hour</option>
+            </select>
+          </div>
+          <div class="col-span-2">
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Trade Date & Time</label>
+            <input id="trade-datetime" type="datetime-local" required
+              class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors"/>
+          </div>
+          <div class="col-span-2">
+            <label class="text-xs text-gray-400 font-medium block mb-1.5">Notes (Optional)</label>
+            <textarea id="trade-notes" placeholder="Any notes about this trade..." rows="2"
+              class="w-full bg-dark border border-border text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors placeholder-gray-500 resize-none"></textarea>
+          </div>
+        </div>
+        <!-- Calculated Profit Preview -->
+        <div id="profit-preview" class="bg-dark rounded-xl p-3 border border-border hidden">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-400">Calculated Profit/Loss:</span>
+            <span id="profit-preview-value" class="font-bold text-white"></span>
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeModal()" class="flex-1 bg-dark border border-border text-white text-sm font-medium py-3 rounded-xl hover:border-gray-400 transition-all">Cancel</button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold py-3 rounded-xl hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/30">
+            <i class="fas fa-save mr-2"></i> Save Trade
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    initTrades();
+    if (window.location.hash === '#add') openModal();
+    document.getElementById('trade-search').addEventListener('input', renderTradesTable);
+    document.getElementById('filter-result').addEventListener('change', renderTradesTable);
+    document.getElementById('filter-direction').addEventListener('change', renderTradesTable);
+    document.getElementById('filter-sort').addEventListener('change', renderTradesTable);
+  </script>
+</body>
+</html>

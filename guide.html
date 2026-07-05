@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PocketPro – Trading Guide</title>
+  <meta name="description" content="Complete Pocket Option binary options trading guide for beginners and advanced traders."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary:'#6C63FF', secondary:'#FF6584', accent:'#43E97B',
+            dark:'#0D0F1A', darker:'#080A12', card:'#12162A',
+            border:'#1E2340', win:'#43E97B', loss:'#FF4C6A', neutral:'#F0B429',
+          },
+          fontFamily:{ inter:['Inter','sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Table of Contents active */
+    .toc-link { transition:all 0.2s; }
+    .toc-link:hover, .toc-link.active {
+      color:#6C63FF;
+      background:rgba(108,99,255,0.08);
+      border-left:2px solid #6C63FF;
+    }
+    .toc-link { border-left:2px solid transparent; }
+
+    /* Section headings */
+    .section-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      background:rgba(108,99,255,0.12); border:1px solid rgba(108,99,255,0.3);
+      color:#6C63FF; border-radius:99px; padding:3px 12px;
+      font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;
+    }
+
+    /* Step cards */
+    .step-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .step-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(108,99,255,0.1); }
+
+    /* Candle demo */
+    .candle-green { background:#43E97B; }
+    .candle-red   { background:#FF4C6A; }
+    .wick { width:2px; margin:0 auto; background:inherit; }
+
+    /* Progress bar */
+    .xp-bar { background:#1E2340; border-radius:99px; height:8px; overflow:hidden; }
+    .xp-fill { background:linear-gradient(90deg,#6C63FF,#43E97B); height:100%; border-radius:99px; transition:width 0.6s ease; }
+
+    /* Glossary */
+    .gloss-item { border-bottom:1px solid #1E2340; }
+    .gloss-item:last-child { border-bottom:none; }
+
+    /* Quiz */
+    .quiz-opt { transition:all 0.2s; cursor:pointer; }
+    .quiz-opt:hover { border-color:#6C63FF; background:rgba(108,99,255,0.08); }
+    .quiz-opt.correct  { background:rgba(67,233,123,0.15); border-color:#43E97B; color:#43E97B; }
+    .quiz-opt.wrong    { background:rgba(255,76,106,0.15); border-color:#FF4C6A; color:#FF4C6A; }
+
+    /* Scroll highlight */
+    .guide-section { scroll-margin-top:80px; }
+
+    @keyframes fadeInUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .fade-up { animation:fadeInUp 0.5s ease both; }
+  </style>
+</head>
+<body class="bg-darker font-inter text-white min-h-screen">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="fixed top-0 left-0 h-full w-64 bg-card border-r border-border z-50 flex flex-col">
+  <div class="p-6 border-b border-border">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+        <i class="fas fa-chart-line text-white text-lg"></i>
+      </div>
+      <div><h1 class="font-bold text-lg text-white">PocketPro</h1><p class="text-xs text-gray-400">Trade Manager</p></div>
+    </div>
+  </div>
+  <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+    <a href="index.html"    class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"><i class="fas fa-grid-2 w-5 text-center"></i> Dashboard</a>
+    <a href="trades.html"   class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"><i class="fas fa-list-check w-5 text-center"></i> Trade Log</a>
+    <a href="analytics.html"class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"><i class="fas fa-chart-bar w-5 text-center"></i> Analytics</a>
+    <a href="risk.html"     class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"><i class="fas fa-shield-halved w-5 text-center"></i> Risk Manager</a>
+    <a href="guide.html"    class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"><i class="fas fa-book-open w-5 text-center"></i> Trading Guide</a>
+    <a href="settings.html" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"><i class="fas fa-gear w-5 text-center"></i> Settings</a>
+  </nav>
+  <div class="p-4 border-t border-border">
+    <div class="bg-dark rounded-xl p-3 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-sm font-bold">H</div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-medium text-white truncate" id="sidebar-username">Hari</p>
+        <p class="text-xs text-gray-400">Trader</p>
+      </div>
+      <i class="fas fa-circle text-accent text-xs"></i>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="ml-64 min-h-screen flex">
+
+  <!-- Content Area -->
+  <div class="flex-1 min-w-0">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-darker/80 backdrop-blur-xl border-b border-border px-8 py-4 flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i class="fas fa-book-open text-primary"></i> Trading Guide
+        </h2>
+        <p class="text-sm text-gray-400">Complete Sinhala guide for Pocket Option trading</p>
+      </div>
+      <!-- Progress -->
+      <div class="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-2">
+        <i class="fas fa-star text-neutral text-sm"></i>
+        <div>
+          <p class="text-xs text-gray-400">Guide Progress</p>
+          <div class="xp-bar w-32 mt-1">
+            <div class="xp-fill" id="guide-progress-bar" style="width:0%"></div>
+          </div>
+        </div>
+        <span class="text-sm font-bold text-white" id="guide-progress-pct">0%</span>
+      </div>
+    </header>
+
+    <div class="p-8 space-y-12 max-w-4xl">
+
+      <!-- ══════════════════════════════════════
+           HERO
+           ══════════════════════════════════════ -->
+      <div class="relative bg-card border border-border rounded-3xl p-8 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 pointer-events-none"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -translate-y-20 translate-x-20 blur-3xl pointer-events-none"></div>
+        <div class="relative">
+          <span class="section-badge mb-4 inline-flex"><i class="fas fa-flag-checkered"></i> Complete Guide</span>
+          <h1 class="text-3xl font-black text-white mt-2 leading-tight">
+            Pocket Option Binary Options<br/>
+            <span style="background:linear-gradient(135deg,#6C63FF,#FF6584);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+              Trading Guide
+            </span>
+          </h1>
+          <p class="text-gray-400 mt-3 text-base leading-relaxed max-w-2xl">
+            Beginner සිට Advanced දක්වා — Binary Options trade කරන ආකාරය, Risk manage කරන ආකාරය, සහ profit ලබා ගන්නේ කෙසේදැයි step-by-step ශ්‍රීලාංකීය traders සඳහා.
+          </p>
+          <div class="flex gap-3 mt-6">
+            <a href="#section-basics" class="bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-all hover:shadow-lg hover:shadow-primary/30">
+              <i class="fas fa-play mr-2"></i> Start Reading
+            </a>
+            <a href="#section-quickstart" class="bg-dark border border-border text-white text-sm font-medium px-6 py-3 rounded-xl hover:border-primary/50 transition-all">
+              <i class="fas fa-bolt mr-2 text-neutral"></i> Quick Start
+            </a>
+          </div>
+          <!-- Stats Row -->
+          <div class="flex gap-6 mt-8 pt-6 border-t border-border/50">
+            <div><p class="text-2xl font-black text-white">8</p><p class="text-xs text-gray-400">Chapters</p></div>
+            <div><p class="text-2xl font-black text-white">4</p><p class="text-xs text-gray-400">Strategies</p></div>
+            <div><p class="text-2xl font-black text-white">10</p><p class="text-xs text-gray-400">Golden Rules</p></div>
+            <div><p class="text-2xl font-black text-win">Free</p><p class="text-xs text-gray-400">Forever</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           CH 1: BASICS
+           ══════════════════════════════════════ -->
+      <section id="section-basics" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-1"></i> Chapter 1</span>
+          <h2 class="text-2xl font-black text-white mt-3">Binary Options යනු කුමක්ද?</h2>
+          <p class="text-gray-400 text-sm mt-1">Fundamentals — ඔබ trade කරන්නේ කුමක් මතද?</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-card border border-border rounded-2xl p-5 step-card">
+            <div class="w-10 h-10 rounded-xl bg-win/20 flex items-center justify-center mb-3">
+              <i class="fas fa-arrow-trend-up text-win"></i>
+            </div>
+            <h4 class="font-bold text-white">CALL Trade (Up ↑)</h4>
+            <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+              ඔබ හිතනවා price <strong class="text-win">ඉහළ</strong> යනවා කියලා. Expiry time ට price ඔබේ entry price ට වඩා ඉහළ නම් — <strong class="text-win">WIN!</strong>
+            </p>
+            <div class="mt-3 bg-dark rounded-lg p-3 text-xs font-mono text-gray-300">
+              Entry: $1.0850 → Expiry: $1.0873<br/>
+              <span class="text-win">✅ WIN — Price went UP</span>
+            </div>
+          </div>
+          <div class="bg-card border border-border rounded-2xl p-5 step-card">
+            <div class="w-10 h-10 rounded-xl bg-loss/20 flex items-center justify-center mb-3">
+              <i class="fas fa-arrow-trend-down text-loss"></i>
+            </div>
+            <h4 class="font-bold text-white">PUT Trade (Down ↓)</h4>
+            <p class="text-xs text-gray-400 mt-2 leading-relaxed">
+              ඔබ හිතනවා price <strong class="text-loss">පහළ</strong> යනවා කියලා. Expiry time ට price ඔබේ entry price ට වඩා පහළ නම් — <strong class="text-win">WIN!</strong>
+            </p>
+            <div class="mt-3 bg-dark rounded-lg p-3 text-xs font-mono text-gray-300">
+              Entry: $1.0850 → Expiry: $1.0821<br/>
+              <span class="text-win">✅ WIN — Price went DOWN</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- How profit works -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h4 class="font-bold text-white mb-4 flex items-center gap-2"><i class="fas fa-dollar-sign text-neutral"></i> Profit ගණනය කරන ආකාරය</h4>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-dark rounded-xl p-4 text-center">
+              <p class="text-xs text-gray-400 mb-2">Trade Amount</p>
+              <p class="text-2xl font-black text-white">$10</p>
+            </div>
+            <div class="bg-dark rounded-xl p-4 text-center">
+              <p class="text-xs text-gray-400 mb-2">Payout %</p>
+              <p class="text-2xl font-black text-primary">80%</p>
+            </div>
+            <div class="bg-dark rounded-xl p-4 text-center">
+              <p class="text-xs text-gray-400 mb-2">If WIN</p>
+              <p class="text-2xl font-black text-win">+$8</p>
+              <p class="text-xs text-gray-500">($10 × 80%)</p>
+            </div>
+          </div>
+          <div class="mt-4 bg-dark rounded-xl p-4">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-400">WIN: Get back</span>
+              <span class="text-win font-bold">$10 + $8 = $18 total</span>
+            </div>
+            <div class="flex items-center justify-between text-sm mt-2">
+              <span class="text-gray-400">LOSS: Lose</span>
+              <span class="text-loss font-bold">-$10 (your full bet)</span>
+            </div>
+          </div>
+          <div class="mt-3 bg-loss/10 border border-loss/20 rounded-xl p-3 text-xs text-gray-300">
+            <i class="fas fa-triangle-exclamation text-loss mr-2"></i>
+            <strong>Important:</strong> Binary options = all or nothing. WIN කළොත් profit, LOSS කළොත් bet ම නැති වෙනවා.
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           CH 2: POCKET OPTION SETUP
+           ══════════════════════════════════════ -->
+      <section id="section-quickstart" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-2"></i> Chapter 2</span>
+          <h2 class="text-2xl font-black text-white mt-3">Pocket Option Setup කරන ආකාරය</h2>
+          <p class="text-gray-400 text-sm mt-1">Platform ට login වී trade කිරීමට ready වෙන ආකාරය</p>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Steps -->
+          <div class="flex gap-4 bg-card border border-border rounded-xl p-4 step-card items-start">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-sm font-black shrink-0">1</div>
+            <div>
+              <p class="font-bold text-white text-sm">pocketoption.com ට Register වෙන්න</p>
+              <p class="text-xs text-gray-400 mt-1">Email හෝ Google account use කරන්න. Verification complete කරන්න. Free demo account $50,000 virtual money සමඟ ලැබේ.</p>
+            </div>
+          </div>
+          <div class="flex gap-4 bg-card border border-border rounded-xl p-4 step-card items-start">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-sm font-black shrink-0">2</div>
+            <div>
+              <p class="font-bold text-white text-sm">Demo Account ට Switch කරන්න <span class="text-win text-xs">(MUST DO FIRST!)</span></p>
+              <p class="text-xs text-gray-400 mt-1">Top right → "Practice" mode select කරන්න. Real money use <strong class="text-loss">නොකරන්න</strong> ඔබ profitable වෙන්නේ demo ලා confirm කරන්නේ නැතිව.</p>
+            </div>
+          </div>
+          <div class="flex gap-4 bg-card border border-border rounded-xl p-4 step-card items-start">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-sm font-black shrink-0">3</div>
+            <div>
+              <p class="font-bold text-white text-sm">Asset Select කරන්න</p>
+              <p class="text-xs text-gray-400 mt-1">EUR/USD, GBP/USD හෝ OTC assets select කරන්න. Beginners ට <strong class="text-primary">EUR/USD</strong> best — most predictable. OTC ලා weekends open.</p>
+            </div>
+          </div>
+          <div class="flex gap-4 bg-card border border-border rounded-xl p-4 step-card items-start">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-sm font-black shrink-0">4</div>
+            <div>
+              <p class="font-bold text-white text-sm">Trade Amount Set කරන්න</p>
+              <p class="text-xs text-gray-400 mt-1">Minimum $1. Risk Manager page use කරලා ඔබේ balance ට හරියන amount calculate කරන්න. <strong class="text-neutral">Never use more than 2% of balance!</strong></p>
+            </div>
+          </div>
+          <div class="flex gap-4 bg-card border border-border rounded-xl p-4 step-card items-start">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-sm font-black shrink-0">5</div>
+            <div>
+              <p class="font-bold text-white text-sm">Expiry Time Select කරන්න</p>
+              <p class="text-xs text-gray-400 mt-1">Beginners ට <strong class="text-primary">1 minute හෝ 5 minutes</strong> best. Very short (5 sec, 30 sec) ලා gambling ලෙස සලකනු ලැබේ — avoid!</p>
+            </div>
+          </div>
+          <div class="flex gap-4 bg-card border border-border rounded-xl p-4 step-card items-start">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-sm font-black shrink-0">6</div>
+            <div>
+              <p class="font-bold text-white text-sm">CALL හෝ PUT Click කරන්න — Trade Log ට Record කරන්න!</p>
+              <p class="text-xs text-gray-400 mt-1">Trade close වූ පසු result PocketPro Trade Log ට add කරන්න. Analytics page use කරලා ඔබේ performance track කරන්න.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platform tips -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-card border border-win/20 rounded-xl p-4">
+            <i class="fas fa-check-circle text-win mb-2"></i>
+            <p class="text-sm font-semibold text-white">Demo ලා Practice කරන්න</p>
+            <p class="text-xs text-gray-400 mt-1">Minimum 50 trades demo ලා WIN කරලා real ට move වෙන්න</p>
+          </div>
+          <div class="bg-card border border-primary/20 rounded-xl p-4">
+            <i class="fas fa-clock text-primary mb-2"></i>
+            <p class="text-sm font-semibold text-white">Best Trading Hours</p>
+            <p class="text-xs text-gray-400 mt-1">London + NY session overlap: රාත්‍රී 6:30 – 11:30 (IST/SL time)</p>
+          </div>
+          <div class="bg-card border border-neutral/20 rounded-xl p-4">
+            <i class="fas fa-ban text-neutral mb-2"></i>
+            <p class="text-sm font-semibold text-white">News Events Avoid</p>
+            <p class="text-xs text-gray-400 mt-1">NFP, Interest Rate decisions — high volatility = unpredictable</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           CH 3: CHART READING
+           ══════════════════════════════════════ -->
+      <section id="section-charts" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-3"></i> Chapter 3</span>
+          <h2 class="text-2xl font-black text-white mt-3">Chart කියවන ආකාරය</h2>
+          <p class="text-gray-400 text-sm mt-1">Candlesticks, Trends, Support & Resistance</p>
+        </div>
+
+        <!-- Candlestick Explanation -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h4 class="font-bold text-white mb-5">🕯️ Candlestick Chart</h4>
+          <div class="grid grid-cols-2 gap-8">
+            <!-- Visual candles -->
+            <div class="flex items-end gap-6 justify-center py-4">
+              <!-- Green candle -->
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-1 h-8 bg-win/60 rounded"></div>
+                <div class="w-8 h-20 bg-win rounded"></div>
+                <div class="w-1 h-5 bg-win/60 rounded"></div>
+                <p class="text-xs text-win mt-2 font-semibold">Bullish</p>
+                <p class="text-xs text-gray-400">Price ↑</p>
+              </div>
+              <!-- Red candle -->
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-1 h-6 bg-loss/60 rounded"></div>
+                <div class="w-8 h-16 bg-loss rounded"></div>
+                <div class="w-1 h-10 bg-loss/60 rounded"></div>
+                <p class="text-xs text-loss mt-2 font-semibold">Bearish</p>
+                <p class="text-xs text-gray-400">Price ↓</p>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="bg-dark rounded-xl p-3">
+                <p class="text-xs font-semibold text-win">🟢 Green (Bullish) Candle</p>
+                <p class="text-xs text-gray-400 mt-1">Open < Close. Price ඉහළ ගිහින් close වෙලා. CALL signal.</p>
+              </div>
+              <div class="bg-dark rounded-xl p-3">
+                <p class="text-xs font-semibold text-loss">🔴 Red (Bearish) Candle</p>
+                <p class="text-xs text-gray-400 mt-1">Open > Close. Price පහළ ගිහින් close වෙලා. PUT signal.</p>
+              </div>
+              <div class="bg-dark rounded-xl p-3">
+                <p class="text-xs font-semibold text-gray-300">📏 Wick (Shadow)</p>
+                <p class="text-xs text-gray-400 mt-1">High/Low range. Long wicks = price rejected that level = reversal signal.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trend Types -->
+        <div class="grid grid-cols-3 gap-4">
+          <div class="bg-card border border-win/20 rounded-2xl p-5 step-card">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-arrow-trend-up text-win text-lg"></i>
+              <h4 class="font-bold text-win">Uptrend</h4>
+            </div>
+            <p class="text-xs text-gray-400 leading-relaxed">Higher highs + Higher lows. Trade <strong class="text-win">CALL</strong> ලා on pullbacks. Trend is your friend!</p>
+            <div class="mt-3 text-xs font-mono text-gray-500">
+              L1 → H1 → L2 → H2 →<br/>
+              (L2 > L1, H2 > H1) ✅
+            </div>
+          </div>
+          <div class="bg-card border border-loss/20 rounded-2xl p-5 step-card">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-arrow-trend-down text-loss text-lg"></i>
+              <h4 class="font-bold text-loss">Downtrend</h4>
+            </div>
+            <p class="text-xs text-gray-400 leading-relaxed">Lower highs + Lower lows. Trade <strong class="text-loss">PUT</strong> ලා on bounces. Follow the trend down.</p>
+            <div class="mt-3 text-xs font-mono text-gray-500">
+              H1 → L1 → H2 → L2 →<br/>
+              (H2 &lt; H1, L2 &lt; L1) ✅
+            </div>
+          </div>
+          <div class="bg-card border border-neutral/20 rounded-2xl p-5 step-card">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fas fa-arrows-left-right text-neutral text-lg"></i>
+              <h4 class="font-bold text-neutral">Sideways / Range</h4>
+            </div>
+            <p class="text-xs text-gray-400 leading-relaxed">Price moves between Support and Resistance. Trade bounces off levels.</p>
+            <div class="mt-3 text-xs font-mono text-gray-500">
+              Resistance: ━━━━━━━━<br/>
+              Support:    ━━━━━━━━
+            </div>
+          </div>
+        </div>
+
+        <!-- Support/Resistance -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h4 class="font-bold text-white mb-4">🎯 Support & Resistance</h4>
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <div class="bg-dark rounded-xl p-4 border border-win/20">
+                <p class="text-xs font-bold text-win mb-2">Support (Floor)</p>
+                <p class="text-xs text-gray-400 leading-relaxed">Price repeatedly bounces UP from this level. Strong support zone = good CALL entry point. Breaks below = trend change!</p>
+              </div>
+              <div class="bg-dark rounded-xl p-4 border border-loss/20 mt-3">
+                <p class="text-xs font-bold text-loss mb-2">Resistance (Ceiling)</p>
+                <p class="text-xs text-gray-400 leading-relaxed">Price repeatedly bounces DOWN from this level. Strong resistance = good PUT entry point. Breaks above = bullish breakout!</p>
+              </div>
+            </div>
+            <div class="bg-dark rounded-xl p-4 flex flex-col justify-center">
+              <div class="space-y-2 text-xs">
+                <p class="text-gray-500 text-center font-mono">Price Chart (simplified)</p>
+                <div class="border border-loss/30 rounded-lg p-1.5 text-center text-loss text-xs">Resistance: $1.0900</div>
+                <div class="text-center text-gray-400 py-1">↕ Price bouncing</div>
+                <div class="border border-win/30 rounded-lg p-1.5 text-center text-win text-xs">Support: $1.0850</div>
+              </div>
+              <div class="mt-4 space-y-1 text-xs">
+                <p class="text-gray-400">✅ Near Support → Trade CALL</p>
+                <p class="text-gray-400">✅ Near Resistance → Trade PUT</p>
+                <p class="text-gray-400">⚠️ Mid-range → Skip trade</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           CH 4: INDICATORS
+           ══════════════════════════════════════ -->
+      <section id="section-indicators" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-4"></i> Chapter 4</span>
+          <h2 class="text-2xl font-black text-white mt-3">Best Indicators for Pocket Option</h2>
+          <p class="text-gray-400 text-sm mt-1">Platform built-in tools use කරලා signals confirm කරන්න</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- RSI -->
+          <div class="bg-card border border-border rounded-2xl p-5 step-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                <span class="text-primary font-black text-sm">RSI</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-bold text-white">RSI – Relative Strength Index</h4>
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-win/10 text-win border border-win/20">⭐ Most Used</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">0–100 scale. Market overbought/oversold conditions හදුනා ගනී. Pocket Option ට default setting: 14 period.</p>
+                <div class="grid grid-cols-3 gap-3 mt-3">
+                  <div class="bg-dark rounded-lg p-2 text-center">
+                    <p class="text-loss font-bold text-sm">70+ = Overbought</p>
+                    <p class="text-xs text-gray-400">→ Trade PUT</p>
+                  </div>
+                  <div class="bg-dark rounded-lg p-2 text-center">
+                    <p class="text-gray-400 text-sm">30–70 = Neutral</p>
+                    <p class="text-xs text-gray-500">→ Wait</p>
+                  </div>
+                  <div class="bg-dark rounded-lg p-2 text-center">
+                    <p class="text-win font-bold text-sm">30 = Oversold</p>
+                    <p class="text-xs text-gray-400">→ Trade CALL</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MACD -->
+          <div class="bg-card border border-border rounded-2xl p-5 step-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center shrink-0">
+                <span class="text-secondary font-black text-xs">MACD</span>
+              </div>
+              <div class="flex-1">
+                <h4 class="font-bold text-white">MACD – Trend & Momentum</h4>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Two moving averages cross-over use කරලා trend direction change detect කරනවා. Settings: 12, 26, 9.</p>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                  <div class="bg-dark rounded-lg p-2">
+                    <p class="text-win font-semibold text-xs">🟢 Bullish Signal</p>
+                    <p class="text-xs text-gray-400">MACD line crosses ABOVE signal line → CALL</p>
+                  </div>
+                  <div class="bg-dark rounded-lg p-2">
+                    <p class="text-loss font-semibold text-xs">🔴 Bearish Signal</p>
+                    <p class="text-xs text-gray-400">MACD line crosses BELOW signal line → PUT</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bollinger Bands -->
+          <div class="bg-card border border-border rounded-2xl p-5 step-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-neutral/20 flex items-center justify-center shrink-0">
+                <span class="text-neutral font-black text-xs">BB</span>
+              </div>
+              <div class="flex-1">
+                <h4 class="font-bold text-white">Bollinger Bands – Volatility</h4>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">3 bands: Middle (SMA), Upper band, Lower band. Price bands ල outside ගිහින් return වෙනවා typically.</p>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                  <div class="bg-dark rounded-lg p-2">
+                    <p class="text-win font-semibold text-xs">Touch Lower Band → CALL</p>
+                    <p class="text-xs text-gray-400">Price too low, bounce expected</p>
+                  </div>
+                  <div class="bg-dark rounded-lg p-2">
+                    <p class="text-loss font-semibold text-xs">Touch Upper Band → PUT</p>
+                    <p class="text-xs text-gray-400">Price too high, pullback expected</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MA -->
+          <div class="bg-card border border-border rounded-2xl p-5 step-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center shrink-0">
+                <span class="text-accent font-black text-xs">MA</span>
+              </div>
+              <div class="flex-1">
+                <h4 class="font-bold text-white">Moving Average – Trend Direction</h4>
+                <p class="text-xs text-gray-400 mt-2 leading-relaxed">Price average over time. 50 MA + 200 MA use කරලා trend confirm කරන්න. Simple but powerful.</p>
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                  <div class="bg-dark rounded-lg p-2">
+                    <p class="text-win font-semibold text-xs">Price above 50 MA → CALL</p>
+                    <p class="text-xs text-gray-400">Uptrend confirmed</p>
+                  </div>
+                  <div class="bg-dark rounded-lg p-2">
+                    <p class="text-loss font-semibold text-xs">Price below 50 MA → PUT</p>
+                    <p class="text-xs text-gray-400">Downtrend confirmed</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           CH 5: STRATEGIES
+           ══════════════════════════════════════ -->
+      <section id="section-strategies" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-5"></i> Chapter 5</span>
+          <h2 class="text-2xl font-black text-white mt-3">Proven Trading Strategies</h2>
+          <p class="text-gray-400 text-sm mt-1">Beginners ලා prove කරගෙන ඉන්න 4 strategies</p>
+        </div>
+
+        <!-- Strategy 1 -->
+        <div class="bg-card border border-border rounded-2xl p-6 step-card">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-win to-primary flex items-center justify-center text-white font-black">1</div>
+            <div>
+              <h4 class="font-bold text-white">RSI + Support/Resistance Strategy</h4>
+              <span class="text-xs text-win">⭐ Best for Beginners — 60-65% Win Rate</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide">CALL Signal:</p>
+              <div class="bg-dark rounded-lg p-3 space-y-1.5">
+                <p class="text-xs text-gray-300">✅ Price near <span class="text-win">Support</span> level</p>
+                <p class="text-xs text-gray-300">✅ RSI below <span class="text-win">30</span> (oversold)</p>
+                <p class="text-xs text-gray-300">✅ Bullish candle forming</p>
+                <p class="text-xs text-gray-300">✅ Enter <span class="text-primary">1–5 min</span> expiry</p>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide">PUT Signal:</p>
+              <div class="bg-dark rounded-lg p-3 space-y-1.5">
+                <p class="text-xs text-gray-300">✅ Price near <span class="text-loss">Resistance</span> level</p>
+                <p class="text-xs text-gray-300">✅ RSI above <span class="text-loss">70</span> (overbought)</p>
+                <p class="text-xs text-gray-300">✅ Bearish candle forming</p>
+                <p class="text-xs text-gray-300">✅ Enter <span class="text-primary">1–5 min</span> expiry</p>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3 bg-primary/10 border border-primary/20 rounded-lg p-3 text-xs text-primary">
+            💡 <strong>Pro tip:</strong> RSI divergence (price makes new high but RSI doesn't) = very strong reversal signal!
+          </div>
+        </div>
+
+        <!-- Strategy 2 -->
+        <div class="bg-card border border-border rounded-2xl p-6 step-card">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-neutral flex items-center justify-center text-white font-black">2</div>
+            <div>
+              <h4 class="font-bold text-white">Trend Following (MA Crossover)</h4>
+              <span class="text-xs text-primary">📊 Intermediate — 58-63% Win Rate</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-dark rounded-lg p-3 space-y-1.5">
+              <p class="text-xs font-semibold text-win mb-2">CALL Setup:</p>
+              <p class="text-xs text-gray-300">✅ 9 EMA crosses above 21 EMA</p>
+              <p class="text-xs text-gray-300">✅ Price above both MAs</p>
+              <p class="text-xs text-gray-300">✅ MACD histogram positive</p>
+              <p class="text-xs text-gray-300">✅ 5 min expiry</p>
+            </div>
+            <div class="bg-dark rounded-lg p-3 space-y-1.5">
+              <p class="text-xs font-semibold text-loss mb-2">PUT Setup:</p>
+              <p class="text-xs text-gray-300">✅ 9 EMA crosses below 21 EMA</p>
+              <p class="text-xs text-gray-300">✅ Price below both MAs</p>
+              <p class="text-xs text-gray-300">✅ MACD histogram negative</p>
+              <p class="text-xs text-gray-300">✅ 5 min expiry</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy 3 -->
+        <div class="bg-card border border-border rounded-2xl p-6 step-card">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neutral to-secondary flex items-center justify-center text-white font-black">3</div>
+            <div>
+              <h4 class="font-bold text-white">Bollinger Band Bounce Strategy</h4>
+              <span class="text-xs text-neutral">⚡ Fast Scalping — Range markets</span>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <p class="text-xs text-gray-400 leading-relaxed">Sideways market ල trade කරන best strategy. Price BB lower band touch කළාම CALL, upper band touch කළාම PUT.</p>
+            <div class="grid grid-cols-3 gap-3 mt-3">
+              <div class="bg-dark rounded-lg p-3 text-center">
+                <p class="text-xs text-gray-400">Timeframe</p>
+                <p class="text-sm font-bold text-white">1M / 5M</p>
+              </div>
+              <div class="bg-dark rounded-lg p-3 text-center">
+                <p class="text-xs text-gray-400">Expiry</p>
+                <p class="text-sm font-bold text-white">1–3 min</p>
+              </div>
+              <div class="bg-dark rounded-lg p-3 text-center">
+                <p class="text-xs text-gray-400">BB Settings</p>
+                <p class="text-sm font-bold text-white">20, 2.0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy 4 -->
+        <div class="bg-card border border-border rounded-2xl p-6 step-card">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-black">4</div>
+            <div>
+              <h4 class="font-bold text-white">Pin Bar Reversal Strategy</h4>
+              <span class="text-xs text-accent">🎯 Advanced — High accuracy at key levels</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-xs text-gray-400 mb-3 leading-relaxed">Candlestick pattern use කරලා reversals catch කරනවා. Pin bar = long wick, small body.</p>
+              <div class="bg-dark rounded-lg p-3 space-y-1.5">
+                <p class="text-xs text-gray-300">✅ Long wick = rejection of price level</p>
+                <p class="text-xs text-gray-300">✅ Small body = indecision</p>
+                <p class="text-xs text-gray-300">✅ Must form at Support/Resistance</p>
+                <p class="text-xs text-gray-300">✅ Wait for next candle confirm</p>
+              </div>
+            </div>
+            <div class="flex gap-4 items-center justify-center">
+              <!-- Bullish pin bar -->
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-1 h-3 bg-win/60 rounded"></div>
+                <div class="w-6 h-4 bg-win rounded"></div>
+                <div class="w-1 h-16 bg-win/60 rounded"></div>
+                <p class="text-xs text-win mt-1">Bullish</p>
+                <p class="text-xs text-gray-400">→ CALL</p>
+              </div>
+              <!-- Bearish pin bar -->
+              <div class="flex flex-col items-center gap-1">
+                <div class="w-1 h-16 bg-loss/60 rounded"></div>
+                <div class="w-6 h-4 bg-loss rounded"></div>
+                <div class="w-1 h-3 bg-loss/60 rounded"></div>
+                <p class="text-xs text-loss mt-1">Bearish</p>
+                <p class="text-xs text-gray-400">→ PUT</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           CH 6: PSYCHOLOGY
+           ══════════════════════════════════════ -->
+      <section id="section-psychology" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-6"></i> Chapter 6</span>
+          <h2 class="text-2xl font-black text-white mt-3">Trading Psychology</h2>
+          <p class="text-gray-400 text-sm mt-1">80% of trading success is mental — mind control ඉගෙන ගන්න</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-card border border-loss/20 rounded-2xl p-5">
+            <h4 class="font-bold text-loss mb-3 flex items-center gap-2"><i class="fas fa-skull"></i> Account Kill කරන Mistakes</h4>
+            <div class="space-y-2">
+              <div class="flex items-start gap-2"><span class="text-loss text-xs mt-0.5">✗</span><p class="text-xs text-gray-300"><strong>Revenge Trading:</strong> Loss ගත්ත ගමන් "recover කරන්නම ඕනෑ" කියලා trade ගන්නේ emotional state ලා</p></div>
+              <div class="flex items-start gap-2"><span class="text-loss text-xs mt-0.5">✗</span><p class="text-xs text-gray-300"><strong>FOMO:</strong> "Market miss කරනවා!" කියලා analysis නැතිව trade ගන්නේ</p></div>
+              <div class="flex items-start gap-2"><span class="text-loss text-xs mt-0.5">✗</span><p class="text-xs text-gray-300"><strong>Overtrading:</strong> Daily limit ලා trade ගෙවල් ගන්නේ — quality over quantity!</p></div>
+              <div class="flex items-start gap-2"><span class="text-loss text-xs mt-0.5">✗</span><p class="text-xs text-gray-300"><strong>Martingale Trap:</strong> Losses double කරලා "recover" කරන්න try කරනේ</p></div>
+              <div class="flex items-start gap-2"><span class="text-loss text-xs mt-0.5">✗</span><p class="text-xs text-gray-300"><strong>No Plan:</strong> Random trades without a strategy</p></div>
+            </div>
+          </div>
+
+          <div class="bg-card border border-win/20 rounded-2xl p-5">
+            <h4 class="font-bold text-win mb-3 flex items-center gap-2"><i class="fas fa-brain"></i> Winning Mindset</h4>
+            <div class="space-y-2">
+              <div class="flex items-start gap-2"><span class="text-win text-xs mt-0.5">✓</span><p class="text-xs text-gray-300"><strong>Accept Losses:</strong> Even best traders lose 40% of trades. It's NORMAL.</p></div>
+              <div class="flex items-start gap-2"><span class="text-win text-xs mt-0.5">✓</span><p class="text-xs text-gray-300"><strong>Follow Your System:</strong> Strategy ක් ලෙස plan follow කරන්න. Improvise නොකරන්න.</p></div>
+              <div class="flex items-start gap-2"><span class="text-win text-xs mt-0.5">✓</span><p class="text-xs text-gray-300"><strong>Trade Journal:</strong> PocketPro Trade Log use කරන්නම — patterns ලා reveal වෙනවා.</p></div>
+              <div class="flex items-start gap-2"><span class="text-win text-xs mt-0.5">✓</span><p class="text-xs text-gray-300"><strong>Break After Loss Streak:</strong> 3 losses → stop, stretch, come back tomorrow.</p></div>
+              <div class="flex items-start gap-2"><span class="text-win text-xs mt-0.5">✓</span><p class="text-xs text-gray-300"><strong>Daily Limits:</strong> Profit target hit? LOG OFF. Loss limit hit? LOG OFF.</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emotion chart -->
+        <div class="bg-card border border-border rounded-2xl p-6">
+          <h4 class="font-bold text-white mb-4">😤 Emotional Trading Cycle — Avoid This!</h4>
+          <div class="flex items-center gap-0 overflow-x-auto pb-2">
+            <div class="flex-1 min-w-24 bg-win/10 border border-win/20 rounded-l-xl p-3 text-center">
+              <p class="text-xs text-win font-bold">WIN 🎉</p><p class="text-xs text-gray-400 mt-1">Euphoric, confident</p>
+            </div>
+            <i class="fas fa-arrow-right text-gray-600 mx-1 shrink-0"></i>
+            <div class="flex-1 min-w-24 bg-neutral/10 border border-neutral/20 p-3 text-center">
+              <p class="text-xs text-neutral font-bold">OVER-TRADE</p><p class="text-xs text-gray-400 mt-1">Trade more, bigger</p>
+            </div>
+            <i class="fas fa-arrow-right text-gray-600 mx-1 shrink-0"></i>
+            <div class="flex-1 min-w-24 bg-loss/10 border border-loss/20 p-3 text-center">
+              <p class="text-xs text-loss font-bold">LOSS 😤</p><p class="text-xs text-gray-400 mt-1">Angry, want revenge</p>
+            </div>
+            <i class="fas fa-arrow-right text-gray-600 mx-1 shrink-0"></i>
+            <div class="flex-1 min-w-24 bg-loss/20 border border-loss/30 p-3 text-center">
+              <p class="text-xs text-loss font-bold">REVENGE TRADE</p><p class="text-xs text-gray-400 mt-1">Bigger bets, no plan</p>
+            </div>
+            <i class="fas fa-arrow-right text-gray-600 mx-1 shrink-0"></i>
+            <div class="flex-1 min-w-24 bg-gray-800 border border-gray-700 rounded-r-xl p-3 text-center">
+              <p class="text-xs text-gray-300 font-bold">ACCOUNT BUST 💀</p><p class="text-xs text-gray-500 mt-1">Start over</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           CH 7: POCKETPRO HOW TO USE
+           ══════════════════════════════════════ -->
+      <section id="section-howto" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-7"></i> Chapter 7</span>
+          <h2 class="text-2xl font-black text-white mt-3">PocketPro Use කරන ආකාරය</h2>
+          <p class="text-gray-400 text-sm mt-1">ඔබේ trading tracker effectively use කරන workflow</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <a href="trades.html" class="bg-card border border-border hover:border-primary/40 rounded-2xl p-5 step-card block transition-all group">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                <i class="fas fa-plus text-primary"></i>
+              </div>
+              <div>
+                <p class="font-bold text-white">Trade Log කරන්නේ කෙසේද?</p>
+                <p class="text-xs text-gray-400 group-hover:text-primary transition-colors">→ Trade Log page open</p>
+              </div>
+            </div>
+            <ol class="space-y-1.5 text-xs text-gray-400 list-decimal list-inside">
+              <li>Trade Log page open කරන්න</li>
+              <li>"Add Trade" button click කරන්න</li>
+              <li>Asset (e.g. EUR/USD), CALL/PUT, Amount, Payout% fill කරන්න</li>
+              <li>WIN/LOSS select කරන්න — profit auto-calculate වෙනවා!</li>
+              <li>Save! Dashboard auto-update වෙනවා</li>
+            </ol>
+          </a>
+          <a href="analytics.html" class="bg-card border border-border hover:border-accent/40 rounded-2xl p-5 step-card block transition-all group">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                <i class="fas fa-chart-bar text-accent"></i>
+              </div>
+              <div>
+                <p class="font-bold text-white">Analytics ලා Read කරන්නේ?</p>
+                <p class="text-xs text-gray-400 group-hover:text-accent transition-colors">→ Analytics page open</p>
+              </div>
+            </div>
+            <ol class="space-y-1.5 text-xs text-gray-400 list-decimal list-inside">
+              <li>Win Rate ≥ 56% maintain කරන්නට try කරන්න</li>
+              <li>Best Asset ලා identify කරන්න (Asset Performance)</li>
+              <li>Daily P&L chart ලා bad days identify කරන්න</li>
+              <li>Max loss/win streaks monitor කරන්න</li>
+            </ol>
+          </a>
+          <a href="risk.html" class="bg-card border border-border hover:border-neutral/40 rounded-2xl p-5 step-card block transition-all group">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-neutral/20 flex items-center justify-center">
+                <i class="fas fa-shield-halved text-neutral"></i>
+              </div>
+              <div>
+                <p class="font-bold text-white">Risk Manager Use කරන්නේ?</p>
+                <p class="text-xs text-gray-400 group-hover:text-neutral transition-colors">→ Risk Manager page open</p>
+              </div>
+            </div>
+            <ol class="space-y-1.5 text-xs text-gray-400 list-decimal list-inside">
+              <li>Balance + Payout + Win Rate enter කරන්න</li>
+              <li>Fixed % use කරන්නම — 2% recommend!</li>
+              <li>Custom slider ලා ඔබේ exact trade size find</li>
+              <li>Breakeven analysis ලා ඔබේ edge confirm</li>
+            </ol>
+          </a>
+          <a href="settings.html" class="bg-card border border-border hover:border-secondary/40 rounded-2xl p-5 step-card block transition-all group">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center">
+                <i class="fas fa-gear text-secondary"></i>
+              </div>
+              <div>
+                <p class="font-bold text-white">Settings Setup කරන්නේ?</p>
+                <p class="text-xs text-gray-400 group-hover:text-secondary transition-colors">→ Settings page open</p>
+              </div>
+            </div>
+            <ol class="space-y-1.5 text-xs text-gray-400 list-decimal list-inside">
+              <li>ඔබේ name + balance + payout set කරන්න</li>
+              <li>Daily loss limit + profit target set කරන්න</li>
+              <li>Auto-save — type කළාම save වෙනවා!</li>
+              <li>API balance connect (optional)</li>
+            </ol>
+          </a>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           CH 8: GLOSSARY
+           ══════════════════════════════════════ -->
+      <section id="section-glossary" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge"><i class="fas fa-8"></i> Chapter 8</span>
+          <h2 class="text-2xl font-black text-white mt-3">Trading Glossary</h2>
+          <p class="text-gray-400 text-sm mt-1">Common trading terms සිංහලෙන්</p>
+        </div>
+        <div class="bg-card border border-border rounded-2xl overflow-hidden">
+          <div class="grid grid-cols-1 divide-y divide-border">
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Payout</span>
+              <p class="text-sm text-gray-300">WIN කළ විට ලැබෙන profit percentage. 80% payout = $10 bet WIN → +$8 profit.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Expiry Time</span>
+              <p class="text-sm text-gray-300">Trade close වෙන time. 1 min expiry = 1 minute පසු result.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Strike Price</span>
+              <p class="text-sm text-gray-300">Trade open කළ price (entry price). WIN/LOSS ගණනය කිරීමේ base.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">OTC Assets</span>
+              <p class="text-sm text-gray-300">Over-the-Counter. Real market close ව ද trade කරන්නට virtual assets. Weekends available.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Win Rate</span>
+              <p class="text-sm text-gray-300">Total trades ලෙස WIN කළ percentage. 60% = 100 trades ලෙස 60 wins. Break-even: 55.6% at 80% payout.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Drawdown</span>
+              <p class="text-sm text-gray-300">Peak balance සිට current balance දක්වා decline. 20%+ drawdown = serious warning sign.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Kelly Criterion</span>
+              <p class="text-sm text-gray-300">Mathematically optimal bet size calculate කිරීමේ formula. Win rate + payout use කරනවා.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Martingale</span>
+              <p class="text-sm text-gray-300">Loss ගත් trade ලෙස next trade double කරීම. High risk — avoid unless you understand fully!</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Pip</span>
+              <p class="text-sm text-gray-300">Price movement ලෙස smallest unit. EUR/USD: 1 pip = 0.0001.</p>
+            </div>
+            <div class="px-6 py-4 flex gap-4 gloss-item hover:bg-white/[0.02] transition-colors">
+              <span class="font-bold text-primary w-32 shrink-0 text-sm">Volatility</span>
+              <p class="text-sm text-gray-300">Price movement ලෙස size. High volatility = large swings = higher risk AND opportunity.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════
+           MINI QUIZ
+           ══════════════════════════════════════ -->
+      <section id="section-quiz" class="guide-section space-y-6 fade-up">
+        <div>
+          <span class="section-badge" style="background:rgba(240,180,41,0.12);border-color:rgba(240,180,41,0.3);color:#F0B429"><i class="fas fa-question"></i> Knowledge Check</span>
+          <h2 class="text-2xl font-black text-white mt-3">Quick Quiz</h2>
+          <p class="text-gray-400 text-sm mt-1">ඔබේ knowledge test කරන්න — ඔබ ready ද?</p>
+        </div>
+        <div id="quiz-container" class="space-y-6"></div>
+        <div id="quiz-result" class="hidden bg-card border border-border rounded-2xl p-6 text-center">
+          <p class="text-3xl mb-2" id="quiz-emoji">🎉</p>
+          <p class="text-xl font-black text-white" id="quiz-score-text"></p>
+          <p class="text-sm text-gray-400 mt-2" id="quiz-verdict"></p>
+          <button onclick="resetQuiz()" class="mt-4 bg-gradient-to-r from-primary to-secondary text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:opacity-90 transition-all">
+            <i class="fas fa-rotate-left mr-2"></i> Try Again
+          </button>
+        </div>
+      </section>
+
+    </div><!-- end content -->
+  </div>
+
+  <!-- ═══ RIGHT TOC ═══ -->
+  <div class="w-56 shrink-0 hidden xl:block">
+    <div class="sticky top-20 p-4 space-y-1">
+      <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-3 px-3">On This Page</p>
+      <a href="#section-basics"      class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">1. Binary Options Basics</a>
+      <a href="#section-quickstart"  class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">2. Platform Setup</a>
+      <a href="#section-charts"      class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">3. Chart Reading</a>
+      <a href="#section-indicators"  class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">4. Indicators</a>
+      <a href="#section-strategies"  class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">5. Strategies</a>
+      <a href="#section-psychology"  class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">6. Psychology</a>
+      <a href="#section-howto"       class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">7. PocketPro Guide</a>
+      <a href="#section-glossary"    class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">8. Glossary</a>
+      <a href="#section-quiz"        class="toc-link block text-xs text-gray-400 px-3 py-2 rounded-lg">📝 Quiz</a>
+    </div>
+  </div>
+
+</main>
+
+<script src="app.js"></script>
+<script>
+syncSidebar();
+
+// ══ QUIZ DATA ══
+const quizData = [
+  {
+    q: "Pocket Option minimum trade size කොපමණද?",
+    opts: ["$0.01","$0.50","$1","$5"],
+    ans: 2,
+    exp: "Pocket Option minimum trade = $1. $5 account ලා $1 trade = 20% risk — very high!"
+  },
+  {
+    q: "RSI value 75 ලෙස. ඔබ trade කරන්නේ?",
+    opts: ["CALL (Up)","PUT (Down)","Trade නොකිරීම","Martingale use"],
+    ans: 1,
+    exp: "RSI 70+ = Overbought = price likely to drop = PUT trade consider කරන්න."
+  },
+  {
+    q: "Fixed % rule ලෙස ideal risk per trade?",
+    opts: ["10–20%","5–10%","1–2%","50%"],
+    ans: 2,
+    exp: "Professional traders risk only 1–2% per trade. This protects you from losing streaks."
+  },
+  {
+    q: "80% payout ලෙස breakeven win rate?",
+    opts: ["50%","55.6%","60%","70%"],
+    ans: 1,
+    exp: "100 / (100 + 80) = 55.6%. You need MORE than 55.6% wins to be profitable at 80% payout."
+  },
+  {
+    q: "3 consecutive loss ගත්ත ගමන් ඔබ කළ යුත්තේ?",
+    opts: ["Double bet (Martingale)","Trade continue","Stop for the day","More trades to recover"],
+    ans: 2,
+    exp: "Stop! Losing streaks are normal. Walk away, review your trades, and come back with fresh eyes."
+  }
+];
+
+let quizAnswers = {};
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  if (!container) return;
+  container.innerHTML = '';
+  quizData.forEach((q, qi) => {
+    container.innerHTML += `
+      <div class="bg-card border border-border rounded-2xl p-5">
+        <p class="text-sm font-bold text-white mb-4">Q${qi+1}. ${q.q}</p>
+        <div class="grid grid-cols-2 gap-2" id="q-${qi}-opts">
+          ${q.opts.map((opt, oi) => `
+            <button onclick="answerQuiz(${qi},${oi})" id="q-${qi}-opt-${oi}"
+              class="quiz-opt border border-border bg-dark text-left px-3 py-2.5 rounded-xl text-xs text-gray-300">
+              ${String.fromCharCode(65+oi)}. ${opt}
+            </button>`).join('')}
+        </div>
+        <div id="q-${qi}-exp" class="hidden mt-3 text-xs rounded-lg p-3"></div>
+      </div>`;
+  });
+}
+
+function answerQuiz(qi, oi) {
+  if (quizAnswers[qi] !== undefined) return;
+  quizAnswers[qi] = oi;
+  const q = quizData[qi];
+  // Disable all options
+  q.opts.forEach((_,i) => {
+    const btn = document.getElementById(`q-${qi}-opt-${i}`);
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === oi && i !== q.ans) btn.classList.add('wrong');
+  });
+  // Show explanation
+  const exp = document.getElementById(`q-${qi}-exp`);
+  exp.classList.remove('hidden');
+  exp.style.background = oi === q.ans ? 'rgba(67,233,123,0.1)' : 'rgba(255,76,106,0.1)';
+  exp.style.border = `1px solid ${oi === q.ans ? 'rgba(67,233,123,0.3)' : 'rgba(255,76,106,0.3)'}`;
+  exp.style.color = oi === q.ans ? '#43E97B' : '#FF4C6A';
+  exp.innerHTML = `<i class="fas ${oi===q.ans?'fa-check-circle':'fa-times-circle'} mr-2"></i>${q.exp}`;
+
+  // Update progress
+  updateProgress();
+
+  // Check if all answered
+  if (Object.keys(quizAnswers).length === quizData.length) showQuizResult();
+}
+
+function showQuizResult() {
+  const score = quizData.filter((_,i) => quizAnswers[i] === quizData[i].ans).length;
+  const total = quizData.length;
+  const pct   = (score/total*100).toFixed(0);
+  const res   = document.getElementById('quiz-result');
+  if (!res) return;
+  res.classList.remove('hidden');
+  document.getElementById('quiz-emoji').textContent = pct >= 80 ? '🎉' : pct >= 60 ? '😊' : '😅';
+  document.getElementById('quiz-score-text').textContent = `${score}/${total} CorreCT (${pct}%)`;
+  document.getElementById('quiz-verdict').textContent =
+    pct >= 80 ? 'Excellent! ඔබ trade කිරීමට ready ය. Risk rules follow කරන්නම!' :
+    pct >= 60 ? 'Good start! Chapters දෙකතුන් review කරලා again try කරන්න.' :
+    'Guide නැවත read කරන්න. Demo account ලා practice කරන්නම!';
+}
+
+function resetQuiz() {
+  quizAnswers = {};
+  document.getElementById('quiz-result').classList.add('hidden');
+  renderQuiz();
+}
+
+// ══ READING PROGRESS ══
+function updateProgress() {
+  const sections = document.querySelectorAll('.guide-section');
+  const scrollY  = window.scrollY + window.innerHeight * 0.6;
+  let passed = 0;
+  sections.forEach(s => { if (s.offsetTop <= scrollY) passed++; });
+  const quizAnswered = Object.keys(quizAnswers).length;
+  const total = sections.length + quizData.length;
+  const pct   = Math.min(100, Math.round(((passed + quizAnswered) / total) * 100));
+  const bar   = document.getElementById('guide-progress-bar');
+  const pctEl = document.getElementById('guide-progress-pct');
+  if (bar)   bar.style.width   = pct + '%';
+  if (pctEl) pctEl.textContent = pct + '%';
+}
+
+// ══ TOC ACTIVE ══
+function updateTOC() {
+  const links = document.querySelectorAll('.toc-link');
+  const sections = document.querySelectorAll('.guide-section');
+  let current = '';
+  sections.forEach(s => { if (window.scrollY + 120 >= s.offsetTop) current = s.id; });
+  links.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+  });
+}
+
+window.addEventListener('scroll', () => { updateProgress(); updateTOC(); });
+renderQuiz();
+updateProgress();
+</script>
+</body>
+</html>

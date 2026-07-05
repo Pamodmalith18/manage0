@@ -1,0 +1,178 @@
+/* ============================================
+   PocketPro – Global Styles
+   ============================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #080A12;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #080A12; }
+::-webkit-scrollbar-thumb { background: #1E2340; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #6C63FF; }
+
+/* ---- Sidebar Nav Links ---- */
+.nav-link {
+  color: #9CA3AF;
+}
+.nav-link:hover {
+  background: rgba(108, 99, 255, 0.12);
+  color: #fff;
+}
+.nav-link.active {
+  background: linear-gradient(135deg, rgba(108,99,255,0.25), rgba(255,101,132,0.15));
+  color: #fff;
+  border: 1px solid rgba(108,99,255,0.3);
+  box-shadow: 0 0 20px rgba(108,99,255,0.08);
+}
+
+/* ---- Stat cards hover glow ---- */
+.stat-card { cursor: default; }
+
+/* ---- Chart filter buttons ---- */
+.chart-filter-btn {
+  background: #0D0F1A;
+  color: #9CA3AF;
+  border: 1px solid #1E2340;
+}
+.chart-filter-btn:hover {
+  color: #fff;
+  border-color: #6C63FF;
+}
+.chart-filter-btn.active {
+  background: linear-gradient(135deg, #6C63FF, #FF6584);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ---- Result Badges ---- */
+.badge-win {
+  background: rgba(67, 233, 123, 0.15);
+  color: #43E97B;
+  border: 1px solid rgba(67,233,123,0.3);
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.badge-loss {
+  background: rgba(255, 76, 106, 0.15);
+  color: #FF4C6A;
+  border: 1px solid rgba(255,76,106,0.3);
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.badge-call {
+  background: rgba(67, 233, 123, 0.1);
+  color: #43E97B;
+  border: 1px solid rgba(67,233,123,0.2);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-put {
+  background: rgba(255, 76, 106, 0.1);
+  color: #FF4C6A;
+  border: 1px solid rgba(255,76,106,0.2);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---- Table rows ---- */
+tbody tr {
+  border-bottom: 1px solid #1E2340;
+  transition: background 0.15s ease;
+}
+tbody tr:hover {
+  background: rgba(108,99,255,0.05);
+}
+tbody tr:last-child { border-bottom: none; }
+td { padding: 14px 24px; font-size: 13px; color: #D1D5DB; }
+
+/* ---- Modal ---- */
+#trade-modal.open { display: flex !important; }
+
+/* ---- Toast ---- */
+#toast.show { display: block !important; animation: slideUp 0.3s ease; }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Progress bars ---- */
+.progress-bar-bg {
+  background: #1E2340;
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* ---- Pulse animation for live indicator ---- */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.fa-circle { animation: pulse 2s ease infinite; }
+
+/* ---- Gradient text ---- */
+.gradient-text {
+  background: linear-gradient(135deg, #6C63FF, #FF6584);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ---- Fade-in animation for content ---- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeInUp 0.4s ease both;
+}
+
+/* ---- Risk alert banner ---- */
+.risk-alert {
+  background: linear-gradient(135deg, rgba(255,76,106,0.15), rgba(255,76,106,0.05));
+  border: 1px solid rgba(255,76,106,0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #FF4C6A;
+}
+
+.profit-alert {
+  background: linear-gradient(135deg, rgba(67,233,123,0.15), rgba(67,233,123,0.05));
+  border: 1px solid rgba(67,233,123,0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #43E97B;
+}
